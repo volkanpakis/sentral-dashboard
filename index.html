@@ -130,6 +130,17 @@ tfoot td:first-child{text-align:left;}
 .los-fill{height:100%;border-radius:3px;transition:width .5s ease;}
 /* DELIQ BADGE */
 .dlq-badge{font-size:10px;background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 5px;margin-left:5px;font-weight:600;}
+/* AI INSIGHTS */
+.ai-dot{width:8px;height:8px;border-radius:50%;background:#6366f1;animation:aiPulse 1s ease-in-out infinite;}
+@keyframes aiPulse{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.2);}}
+.ai-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:10px;}
+.ai-card-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ai-card-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ai-card-title{font-size:12px;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:.05em;}
+.ai-card-priority{margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+.ai-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:12px;color:#334155;line-height:1.5;}
+.ai-item:last-child{border-bottom:none;padding-bottom:0;}
+.ai-bullet{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
 /* FOOTER */
 .footer{margin-top:40px;padding-top:16px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;flex-wrap:wrap;gap:6px;}
 @media(max-width:900px){
@@ -834,6 +845,31 @@ function buildLeasingTab(p){
     </div>
     ${trajTable(p.weeks)}
   </div>
+
+  <!-- AI STRATEGY INSIGHTS -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-num" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">✦</div>
+      <div class="sec-title">AI Strategy &amp; Action Recommendations</div>
+      <div class="sec-sub" id="ai-ts-${p.label.replace(/\s+/g,'_')}"></div>
+    </div>
+    <div id="ai-wrap-${p.label.replace(/\s+/g,'_')}">
+      <div id="ai-trigger-${p.label.replace(/\s+/g,'_')}" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:4px;">Generate AI-powered recommendations for ${p.label}</div>
+          <div style="font-size:12px;color:#64748b;">Analyzes occupancy, ATR risk, leasing funnel, seasonality and local market to suggest specific actions for your team.</div>
+        </div>
+        <button onclick="generateInsights('${p.label.replace(/'/g,"\\'")}','${p.city}')" style="flex-shrink:0;padding:10px 20px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 2px 8px rgba(99,102,241,.3);">✦ Generate Insights</button>
+      </div>
+      <div id="ai-loading-${p.label.replace(/\s+/g,'_')}" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:32px;text-align:center;">
+        <div style="font-size:13px;color:#6366f1;font-weight:600;margin-bottom:8px;">Analyzing property data...</div>
+        <div style="font-size:12px;color:#94a3b8;">Reviewing occupancy, ATR risk, seasonality and market conditions</div>
+        <div style="margin-top:16px;display:flex;justify-content:center;gap:6px;"><div class="ai-dot"></div><div class="ai-dot" style="animation-delay:.15s"></div><div class="ai-dot" style="animation-delay:.3s"></div></div>
+      </div>
+      <div id="ai-result-${p.label.replace(/\s+/g,'_')}" style="display:none;"></div>
+    </div>
+  </div>
+
   </div>`;
 }
 
@@ -1590,6 +1626,110 @@ function drawWynwoodCharts(fw){
           min:Math.max(0,Math.floor(Math.min(...fw.map(w=>w.occ_60d))-3)),
           max:Math.min(100,Math.ceil(Math.max(...fw.map(w=>w.curr_occ))+2))}}}
     });
+  }
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+async function generateInsights(propLabel, city){
+  const apiKey = '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';
+
+  const p = PROPS[currentProp];
+  const w = p.weeks[0];
+  const id = propLabel.replace(/[^a-zA-Z0-9]/g,'_');
+
+  document.getElementById('ai-trigger-'+id).style.display='none';
+  document.getElementById('ai-loading-'+id).style.display='block';
+
+  const marketCtx = {
+    'Atlanta, GA':   'competitive Sun Belt market; strong corporate demand; peak leasing April-August',
+    'Nashville, TN': 'high-growth market; tourism and corporate relocation; spring/summer peak',
+    'Los Angeles, CA':'highly competitive coastal market; year-round demand; price-sensitive renters',
+    'Miami, FL':     'seasonal market; peak Nov-Apr; summer slowdown; international renter pool',
+    'Denver, CO':    'stable Mountain West; spring/summer peak; tech and outdoor lifestyle renters',
+    'Scottsdale, AZ':'strong winter seasonal Oct-Apr; significant summer slowdown; luxury renter profile',
+    'Austin, TX':    'high-growth tech market; spring peak; rapid supply growth creating price pressure',
+    'Chicago, IL':   'large gateway market; peak May-Aug; harsh winter leasing slowdown',
+  }[city] || 'competitive multifamily market';
+
+  const prompt = `You are a multifamily real estate strategy advisor for a VP of Operations weekly review.
+
+Property: ${propLabel}
+City: ${city} — ${marketCtx}
+Week Ending: ${w.week}
+
+OCCUPANCY:
+- Units: ${w.units} | Current: ${w.curr_occ}% | Budget: ${w.budg_occ}% | Variance: ${(w.curr_occ-w.budg_occ).toFixed(1)}pp
+- ATR: ${w.atr_num} units (${w.atr_pct}%)
+- 14d trend: ${w.occ_14d}% (need ${w.lse_14d} leases) | 30d: ${w.occ_30d}% (need ${w.lse_30d}) | 60d: ${w.occ_60d}% (need ${w.lse_60d})
+
+PRICING:
+- Market Rent: $${w.mkt_rent} | In-Place: $${w.inplace_rent||'N/A'} | Eff Rent: $${w.eff_rent||'N/A'}
+
+LEASING FUNNEL:
+- Leads: ${w.leads} | Tours: ${w.tours} | Lead to Tour: ${w.lead_to_tour}% | Closing: ${w.close_pct}%
+- Net Leases: ${w.net_leases} | Gross: ${w.gross_leases} | Renewals: ${w.renews} | NTVs: ${w.ntv} | T4 Net: ${w.t4_net}
+
+Respond ONLY with valid JSON, no markdown or backticks:
+{"summary":"2-3 sentence executive summary","urgency":"high|medium|low","categories":[{"title":"name","icon":"emoji","color":"#hex","priority":"URGENT|HIGH|MEDIUM|LOW","priorityColor":"#hex","priorityText":"#hex","actions":["specific action with actual numbers","action 2","action 3"]}]}
+
+Pick 3-4 from: Pricing Strategy, Occupancy Recovery, Leasing Funnel Optimization, Renewal Strategy, Concessions & Incentives, Seasonal Risk Management, Retention Risk. Be specific and reference actual data numbers.`;
+
+  try {
+    const res = await fetch('https://sentral-dashboard.volkan-pakis.workers.dev', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok){
+      const errData = await res.json().catch(()=>({}));
+      throw new Error(errData.error?.message || 'API error ' + res.status);
+    }
+
+    const data = await res.json();
+    const text = data.content?.filter(b=>b.type==='text').map(b=>b.text).join('') || '';
+    const ins = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    const urgencyHtml = ins.urgency==='high'
+      ? `<div class="alert a-err" style="margin-bottom:12px;">⚠ High Priority — immediate action recommended.</div>`
+      : ins.urgency==='medium'
+      ? `<div class="alert a-warn" style="margin-bottom:12px;">⚡ Medium Priority — address within the week.</div>`
+      : `<div class="alert a-ok" style="margin-bottom:12px;">✓ Property in good shape — focus on maintaining momentum.</div>`;
+
+    const summaryHtml = `<div class="ai-card" style="border-left:3px solid #6366f1;"><div style="font-size:13px;color:#1e293b;line-height:1.6;">${ins.summary}</div></div>`;
+
+    const cardsHtml = (ins.categories||[]).map(cat=>
+      `<div class="ai-card">
+        <div class="ai-card-hdr">
+          <div class="ai-card-icon" style="background:${cat.color}20;">${cat.icon}</div>
+          <div class="ai-card-title">${cat.title}</div>
+          <div class="ai-card-priority" style="background:${cat.priorityColor};color:${cat.priorityText};">${cat.priority}</div>
+        </div>
+        ${(cat.actions||[]).map(a=>`<div class="ai-item"><div class="ai-bullet" style="background:${cat.color};"></div><span>${a}</span></div>`).join('')}
+      </div>`).join('');
+
+    const ts = new Date().toLocaleTimeString();
+    const regenHtml = `<div style="margin-top:8px;font-size:10px;color:#94a3b8;text-align:right;">Generated by Claude · ${ts} · <a href="#" onclick="document.getElementById('ai-trigger-${id}').style.display='flex';document.getElementById('ai-result-${id}').style.display='none';return false;" style="color:#6366f1;text-decoration:none;">↺ Regenerate</a></div>`;
+
+    document.getElementById('ai-loading-'+id).style.display='none';
+    const el = document.getElementById('ai-result-'+id);
+    el.innerHTML = urgencyHtml + summaryHtml + cardsHtml + regenHtml;
+    el.style.display = 'block';
+    const tsEl = document.getElementById('ai-ts-'+id);
+    if(tsEl) tsEl.textContent = 'Generated ' + ts;
+
+  } catch(err) {
+    document.getElementById('ai-loading-'+id).style.display='none';
+    document.getElementById('ai-trigger-'+id).style.display='flex';
+    _apiKey = null;
+    alert('Could not generate insights:\n' + err.message + '\n\nCheck your API key and try again.');
+    console.error('AI error:', err);
   }
 }
 
