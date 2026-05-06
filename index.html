@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentral Portfolio Dashboard — Week Ending May 3, 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;font-size:14px;line-height:1.5;}
+/* HEADER */
+.header{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:34px;height:34px;border-radius:8px;background:#1d4ed8;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;}
+.brand-name{font-size:15px;font-weight:700;color:#0f172a;}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.week-lbl{font-size:12px;color:#64748b;} .week-lbl strong{color:#334155;}
+.live-pill{padding:3px 10px;border-radius:16px;font-size:11px;font-weight:700;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;}
+/* PROP SELECTOR BAR */
+.prop-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;display:flex;gap:0;overflow-x:auto;position:sticky;top:60px;z-index:190;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.prop-btn{padding:12px 16px;font-size:12px;font-weight:500;color:#64748b;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0;}
+.prop-btn:hover{color:#334155;}
+.prop-btn.active{color:#1d4ed8;border-bottom-color:#1d4ed8;font-weight:700;}
+/* NAV TABS */
+.nav{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:0 32px;display:flex;position:sticky;top:109px;z-index:180;}
+.nav-tab{padding:10px 18px;font-size:12px;font-weight:500;color:#64748b;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;}
+.nav-tab:hover{color:#334155;}
+.nav-tab.active{color:#1d4ed8;border-bottom-color:#1d4ed8;font-weight:700;}
+/* PAGE */
+.page{max-width:1200px;margin:0 auto;padding:24px 32px 80px;}
+.prop-panel{display:none;} .prop-panel.active{display:block;}
+.tab-panel{display:none;} .tab-panel.active{display:block;}
+/* PROP HEADER CARD */
+.prop-hdr{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 24px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.prop-hdr-name{font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-.02em;}
+.prop-hdr-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;align-items:center;}
+.badge{padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;}
+.badge-city{background:#f1f5f9;color:#64748b;}
+.badge-ok{background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;}
+.badge-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+.badge-dn{background:#fee2e2;color:#dc2626;border:1px solid #fecaca;}
+.prop-hdr-stats{display:flex;gap:24px;}
+.phs{text-align:right;}
+.phs-lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;}
+.phs-val{font-size:22px;font-weight:800;letter-spacing:-.02em;}
+/* SECTION */
+.section{margin-bottom:26px;}
+.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;}
+.sec-num{width:22px;height:22px;border-radius:5px;background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sn-g{background:#059669;} .sn-p{background:#7c3aed;} .sn-o{background:#d97706;} .sn-r{background:#dc2626;} .sn-gr{background:#64748b;}
+.sec-title{font-size:14px;font-weight:700;color:#0f172a;}
+.sec-sub{font-size:11px;color:#94a3b8;margin-left:auto;white-space:nowrap;}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.kpi{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;}
+.kpi-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.kpi-val{font-size:22px;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-.02em;}
+.kpi-d{margin-top:4px;font-size:11px;font-weight:600;}
+.kpi-s{margin-top:4px;font-size:11px;color:#94a3b8;}
+.up{color:#16a34a;} .dn{color:#dc2626;} .fl{color:#94a3b8;}
+.bl{color:#1d4ed8;} .pu{color:#7c3aed;} .am{color:#d97706;} .gr{color:#059669;}
+/* OCC BAR */
+.occ-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;}
+.occ-row{margin-bottom:14px;} .occ-row:last-of-type{margin-bottom:0;}
+.occ-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:4px;}
+.occ-name{font-size:12px;font-weight:600;color:#334155;}
+.occ-right{display:flex;align-items:baseline;gap:10px;}
+.occ-pct{font-size:17px;font-weight:800;color:#0f172a;}
+.occ-vs{font-size:11px;color:#94a3b8;}
+.bar-bg{height:9px;background:#f1f5f9;border-radius:5px;position:relative;overflow:visible;}
+.bar-fill{height:100%;border-radius:5px;transition:width .7s ease;}
+.budget-tick{position:absolute;top:-4px;width:2px;height:17px;background:#f59e0b;border-radius:1px;}
+.leg-row{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748b;}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+/* ALERTS */
+.alert{padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px;display:flex;align-items:flex-start;gap:6px;}
+.a-ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;}
+.a-warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
+.a-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;}
+.a-err{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;}
+/* GRIDS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+/* CHART */
+.chart-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;}
+.chart-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.ch{position:relative;height:150px;}
+.ch-sm{position:relative;height:120px;}
+.ch-lg{position:relative;height:190px;}
+/* TABLES */
+.tcard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:#f8fafc;}
+thead th{padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #e2e8f0;white-space:nowrap;}
+thead th:first-child{text-align:left;}
+tbody tr:hover{background:#f8fafc;}
+tbody td{padding:8px 12px;text-align:right;font-size:12px;color:#334155;border-bottom:1px solid #f1f5f9;white-space:nowrap;}
+tbody td:first-child{text-align:left;font-weight:500;color:#0f172a;}
+tbody tr:last-child td{border-bottom:none;}
+tfoot tr{background:#eff6ff;border-top:2px solid #bfdbfe;}
+tfoot td{padding:8px 12px;text-align:right;font-size:12px;font-weight:700;color:#1d4ed8;}
+tfoot td:first-child{text-align:left;}
+.tr-hi{background:#eff6ff !important;} .tr-hi td{font-weight:600 !important;} .tr-hi td:first-child{color:#1d4ed8 !important;}
+/* VAR CARDS */
+.var-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.var-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;text-align:center;}
+.var-lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.var-val{font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.var-hint{font-size:11px;font-weight:500;margin-top:3px;}
+.vp{color:#16a34a;} .vn{color:#dc2626;} .vf{color:#94a3b8;}
+/* LTO SCORECARD */
+.lto-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.lto-box{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;}
+.lto-box-hdr{background:#f8fafc;padding:8px 14px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:.05em;}
+.lto-box-hdr span{font-size:10px;color:#94a3b8;margin-left:auto;font-weight:400;text-transform:none;}
+.lto-cols{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.lto-col{padding:14px;border-right:1px solid #f1f5f9;}
+.lto-col:last-child{border-right:none;}
+.lto-col-lbl{font-size:10px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.lto-col-cnt{font-size:11px;color:#64748b;margin-bottom:3px;}
+.lto-col-d{font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.lto-col-p{font-size:12px;font-weight:700;margin-top:1px;}
+/* LOS BARS */
+.los-row{margin-bottom:8px;}
+.los-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.los-bg{height:7px;background:#f1f5f9;border-radius:3px;}
+.los-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+/* DELIQ BADGE */
+.dlq-badge{font-size:10px;background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 5px;margin-left:5px;font-weight:600;}
+/* FOOTER */
+.footer{margin-top:40px;padding-top:16px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;flex-wrap:wrap;gap:6px;}
+@media(max-width:900px){
+  .page{padding:12px;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .two-col,.three-col,.four-col,.var-grid{grid-template-columns:1fr 1fr;}
+  .lto-grid{grid-template-columns:1fr;}
+  .prop-bar,.nav{padding:0 8px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-mark">S</div>
+    <div><div class="brand-name">Sentral Portfolio Dashboard</div></div>
+  </div>
+  <div class="hdr-right">
+    <div class="week-lbl">Week ending <strong>May 3, 2026</strong></div>
+    <div class="live-pill">● Live</div>
+  </div>
+</div>
+
+<!-- PROPERTY SELECTOR -->
+<div class="prop-bar" id="propBar"></div>
+
+<!-- NAV TABS (shared, redrawn per property) -->
+<div class="nav" id="navTabs"></div>
+
+<div class="page" id="mainPage"></div>
+
+<script>
+// ── CHART DEFAULTS ────────────────────────────────────────────────────────────
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#64748b';
+const grid={color:'#f1f5f9',drawBorder:false};
+const tip={backgroundColor:'#fff',titleColor:'#0f172a',bodyColor:'#334155',borderColor:'#e2e8f0',borderWidth:1,padding:8,cornerRadius:6};
+const activeCharts=[];
+function destroyCharts(){activeCharts.forEach(c=>{try{c.destroy();}catch(e){}});activeCharts.length=0;}
+function mkChart(id,cfg){const c=new Chart(document.getElementById(id),cfg);activeCharts.push(c);return c;}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const $d=s=>document.querySelector(s);
+const fmt$=(n)=>n==null?'—':'$'+Number(n).toLocaleString();
+const fmtK=(n)=>{if(n==null)return'—';const a=Math.abs(n);return(n<0?'-':'')+'$'+(a>=1e6?(a/1e6).toFixed(1)+'M':a>=1e3?(a/1e3).toFixed(0)+'K':a.toFixed(0));};
+const fmtP=(n,dec=1)=>n==null?'—':n.toFixed(dec)+'%';
+const sign=(n,prefix='')=>n>=0?`+${prefix}${Math.abs(n).toLocaleString()}`:`-${prefix}${Math.abs(n).toLocaleString()}`;
+const signP=(n)=>n>=0?`+${n.toFixed(2)}%`:`${n.toFixed(2)}%`;
+const varCls=(n)=>n>0?'vp':n<0?'vn':'vf';
+const arrow=(n)=>n>0?'▲':n<0?'▼':'—';
+const upDn=(n)=>n>0?'up':n<0?'dn':'fl';
+
+function occBar(label,val,budget,color){
+  const diff=val-budget;
+  const cls=upDn(diff);
+  return `<div class="occ-row">
+    <div class="occ-top">
+      <span class="occ-name">${label}</span>
+      <div class="occ-right">
+        <span class="occ-pct">${fmtP(val)}</span>
+        <span class="occ-vs">vs ${fmtP(budget)} budget</span>
+        <span class="kpi-d ${cls}">${diff>=0?'+':''}${diff.toFixed(1)}pp</span>
+      </div>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(val,100)}%;background:${color};"></div><div class="budget-tick" style="left:${Math.min(budget,100)}%"></div></div>
+  </div>`;
+}
+
+function trajTable(weeks){
+  const rows=weeks.map((w,i)=>`<tr class="${i===0?'tr-hi':''}">
+    <td>${i===0?w.week+' ◆':w.week}</td><td>${w.units}</td>
+    <td class="${upDn(w.curr_occ-w.budg_occ)}">${fmtP(w.curr_occ)}</td>
+    <td>${fmtP(w.budg_occ)}</td>
+    <td class="${upDn(w.curr_occ-w.budg_occ)}">${w.curr_occ>=w.budg_occ?'+':''}${(w.curr_occ-w.budg_occ).toFixed(1)}pp</td>
+    <td>${fmtP(w.occ_14d)}</td><td>${fmtP(w.occ_30d)}</td><td>${fmtP(w.occ_60d)}</td>
+    <td>${w.leads}</td><td>${w.tours}</td><td>${w.net_leases}</td><td>${w.renews}</td><td>${w.ntv}</td><td>${w.t4_net}</td>
+  </tr>`).join('');
+  const avg=(arr,key)=>(arr.reduce((s,w)=>s+(w[key]||0),0)/arr.length);
+  return `<div class="tcard"><table>
+    <thead><tr><th>Week</th><th>Units</th><th>Occ%</th><th>Bdgt%</th><th>Var</th>
+    <th>14d</th><th>30d</th><th>60d</th><th>Leads</th><th>Tours</th><th>Net Lse</th><th>Renews</th><th>NTV</th><th>T4 Lse</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td>4-Wk Avg</td><td>${weeks[0].units}</td>
+    <td>${avg(weeks,'curr_occ').toFixed(1)}%</td><td>${avg(weeks,'budg_occ').toFixed(1)}%</td><td>—</td>
+    <td>${avg(weeks,'occ_14d').toFixed(1)}%</td><td>${avg(weeks,'occ_30d').toFixed(1)}%</td><td>${avg(weeks,'occ_60d').toFixed(1)}%</td>
+    <td>${Math.round(avg(weeks,'leads'))}</td><td>${Math.round(avg(weeks,'tours'))}</td>
+    <td>${Math.round(avg(weeks,'net_leases'))}</td><td>${Math.round(avg(weeks,'renews'))}</td>
+    <td>${Math.round(avg(weeks,'ntv'))}</td><td>${avg(weeks,'t4_net').toFixed(1)}</td></tr></tfoot>
+  </table></div>`;
+}
+
+function ltoBox(label,color,data){
+  if(!data)return'';
+  const c=data.combined,n=data.new,r=data.renewal;
+  const col=(v)=>v>0?'gr':v<0?'dn':'fl';
+  return `<div class="lto-box">
+    <div class="lto-box-hdr"><div style="width:9px;height:9px;border-radius:2px;background:${color};flex-shrink:0;"></div>${label}<span>Concessions amortized</span></div>
+    <div class="lto-cols">
+      <div class="lto-col"><div class="lto-col-lbl">Combined</div><div class="lto-col-cnt">${c.count} leases</div>
+        <div class="lto-col-d ${col(c.gross_d)}">${sign('','')}${c.gross_d>=0?'+':''}$${Math.abs(c.gross_d).toLocaleString()}</div>
+        <div class="lto-col-p ${col(c.gross_d)}">${signP(c.gross_pct)}</div></div>
+      <div class="lto-col"><div class="lto-col-lbl">New Leases</div><div class="lto-col-cnt">${n.count} leases</div>
+        <div class="lto-col-d ${col(n.gross_d)}">${n.gross_d>=0?'+':''}$${Math.abs(n.gross_d).toLocaleString()}</div>
+        <div class="lto-col-p ${col(n.gross_d)}">${signP(n.gross_pct)}</div></div>
+      <div class="lto-col"><div class="lto-col-lbl">Renewals</div><div class="lto-col-cnt">${r.count} leases</div>
+        <div class="lto-col-d ${col(r.gross_d)}">${r.gross_d>=0?'+':''}$${Math.abs(r.gross_d).toLocaleString()}</div>
+        <div class="lto-col-p ${col(r.gross_d)}">${signP(r.gross_pct)}</div></div>
+    </div></div>`;
+}
+
+function ltoDetailTable(detail,label){
+  if(!detail||detail.length===0)return`<div class="alert a-info">ℹ No ${label} data.</div>`;
+  const rows=detail.map(r=>`<tr>
+    <td>${r.fp}</td><td>${r.unit}</td><td>${r.sqft}</td><td>${r.app_date.slice(5)}</td><td>${r.lease_start.slice(5)}</td><td>${r.term} mo</td>
+    <td>${fmt$(r.curr_gross)}</td><td>${r.conc>0?`<span class="${r.conc>1000?'dn':''}">${fmt$(r.conc)}</span>`:'—'}</td><td>${fmt$(r.curr_eff)}</td>
+    <td>${fmt$(r.prev_gross)}</td><td>${fmt$(r.prev_eff)}</td>
+    <td class="${r.vac_days>60?'dn':r.vac_days>30?'am':''}">${r.vac_days||'—'}</td>
+    <td class="${upDn(r.gross_to_d)}">${r.gross_to_d>=0?'+':''}${fmt$(r.gross_to_d)}</td>
+    <td class="${upDn(r.gross_to_d)}">${r.gross_to_pct>=0?'+':''}${r.gross_to_pct.toFixed(1)}%</td>
+    <td class="${upDn(r.net_to_d)}">${r.net_to_d>=0?'+':''}${fmt$(r.net_to_d)}</td>
+    <td class="${upDn(r.net_to_d)}">${r.net_to_pct>=0?'+':''}${r.net_to_pct.toFixed(1)}%</td>
+  </tr>`).join('');
+  return `<div class="tcard"><table>
+    <thead><tr><th>Floor Plan</th><th>Unit</th><th>SF</th><th>App Date</th><th>Start</th><th>Term</th>
+    <th>Curr Gross</th><th>Conc</th><th>Curr Eff</th><th>Prev Gross</th><th>Prev Eff</th><th>Vac Days</th>
+    <th>Gross TO $</th><th>Gross TO %</th><th>Net TO $</th><th>Net TO %</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+function deliqTenantTable(tenants){
+  return `<div class="tcard"><table>
+    <thead><tr><th>Unit</th><th>Tenant</th><th>Total Charges</th><th>0–30 Days</th><th>31–60 Days</th><th>61–90 Days</th><th>Over 90</th><th>Prepayments</th><th>Total Owed</th></tr></thead>
+    <tbody>${tenants.map(t=>`<tr>
+      <td>${t.unit}</td>
+      <td>${t.name}${t.delinquent?'<span class="dlq-badge">DELINQUENT</span>':''}</td>
+      <td>${fmt$(t.charges)}</td>
+      <td>${t.owed_0_30>0?fmt$(t.owed_0_30):'—'}</td>
+      <td class="${t.owed_31_60>0?'am':''}">${t.owed_31_60>0?fmt$(t.owed_31_60):'—'}</td>
+      <td class="${t.owed_61_90>0?'dn':''}">${t.owed_61_90>0?fmt$(t.owed_61_90):'—'}</td>
+      <td class="${t.owed_90plus>0?'dn':''}">${t.owed_90plus>0?fmt$(t.owed_90plus):'—'}</td>
+      <td class="${t.prepay<0?'gr':''}">${t.prepay<0?fmt$(t.prepay):'—'}</td>
+      <td class="${t.total_owed<0?'gr':t.total_owed>0?'am':''}">${fmt$(t.total_owed)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const PROPS = {
+  "Star Metals": {
+    label:"Sentral West Midtown at Star Metals", city:"Atlanta, GA", units:344,
+    hasLive:true, hasRetail:true,
+    weeks:[
+      {week:"May 3",units:344,curr_occ:91.3,budg_occ:95.0,occ_14d:91.3,occ_30d:92.4,occ_60d:91.9,lse_14d:11,lse_30d:8,lse_60d:10,mkt_rent:1975,inplace_rent:2126,eff_rent:2052,atr_pct:7.3,atr_num:25,leads:134,tours:24,net_leases:8,gross_leases:11,renews:2,ntv:3,t4_net:9,close_pct:33.3,lead_to_tour:17.9},
+      {week:"Apr 26",units:344,curr_occ:91.3,budg_occ:94.5,occ_14d:91.3,occ_30d:90.1,occ_60d:91.0,lse_14d:11,lse_30d:16,lse_60d:13,mkt_rent:1970,inplace_rent:2129,eff_rent:2067,atr_pct:7.8,atr_num:27,leads:124,tours:20,net_leases:8,gross_leases:17,renews:0,ntv:0,t4_net:8,close_pct:40.0,lead_to_tour:16.1},
+      {week:"Apr 19",units:344,curr_occ:89.0,budg_occ:94.5,occ_14d:90.1,occ_30d:87.8,occ_60d:88.1,lse_14d:15,lse_30d:24,lse_60d:23,mkt_rent:1966,inplace_rent:2142,eff_rent:2085,atr_pct:9.3,atr_num:32,leads:178,tours:39,net_leases:9,gross_leases:23,renews:12,ntv:0,t4_net:7,close_pct:23.1,lead_to_tour:21.9},
+      {week:"Apr 12",units:344,curr_occ:88.1,budg_occ:94.5,occ_14d:89.2,occ_30d:86.3,occ_60d:84.6,lse_14d:18,lse_30d:29,lse_60d:35,mkt_rent:1964,inplace_rent:2148,eff_rent:2092,atr_pct:11.6,atr_num:40,leads:262,tours:34,net_leases:10,gross_leases:17,renews:6,ntv:1,t4_net:5,close_pct:29.4,lead_to_tour:13.0},
+    ],
+    stay:{rooms:4359,occ:30,adr:213,revpar:64,revenue:927445,remain:10241,var_rooms:-6387,var_occ:-44,var_adr:10,var_rev:-1249370},
+    live:{rooms:1754,occ:19,adr:124,revpar:24,revenue:217141,var_rooms:-3440,var_occ:-38,var_adr:20,var_rev:-321252},
+    stayPickup:{may:{rooms:0,adr:0,rev:-696},jun:{rooms:0,adr:0,rev:0}},
+    livePickup:{may:{rooms:28,adr:0,rev:0},jun:{rooms:2,adr:0,rev:0}},
+    stayMTD:{rooms:365,occ:29,adr:197,revpar:58,revenue:71853},
+    liveMTD:{rooms:170,occ:22,adr:130,revpar:29,revenue:22127},
+    stayMonthly:null,
+    liveMonthly:[{"month": "Jan 2026", "rooms": 1434, "occ": 71.2, "adr": 158, "revpar": 112, "revenue": 226535}, {"month": "Feb 2026", "rooms": 1153, "occ": 63.4, "adr": 171, "revpar": 108, "revenue": 197392}, {"month": "Mar 2026", "rooms": 1202, "occ": 59.7, "adr": 178, "revpar": 106, "revenue": 214351}, {"month": "Apr 2026", "rooms": 1033, "occ": 53.0, "adr": 193, "revpar": 102, "revenue": 199414}, {"month": "May 2026", "rooms": 170, "occ": 22.0, "adr": 130, "revpar": 29, "revenue": 22127}, {"month": "Jun 2026", "rooms": 274, "occ": 14.1, "adr": 293, "revpar": 41, "revenue": 80298}, {"month": "Jul 2026", "rooms": 307, "occ": 15.2, "adr": 311, "revpar": 47, "revenue": 95532}, {"month": "Aug 2026", "rooms": 14, "occ": 0.7, "adr": 167, "revpar": 1, "revenue": 2332}, {"month": "Sep 2026", "rooms": 46, "occ": 2.4, "adr": 227, "revpar": 5, "revenue": 10425}, {"month": "Oct 2026", "rooms": 5, "occ": 0.2, "adr": 244, "revpar": 1, "revenue": 1220}, {"month": "Nov 2026", "rooms": 93, "occ": 4.8, "adr": 221, "revpar": 11, "revenue": 20561}, {"month": "Dec 2026", "rooms": 17, "occ": 0.8, "adr": 150, "revpar": 1, "revenue": 2545}],
+    stayPickupFull:[],
+    livePickupFull:[{"month": "May 2026", "rooms": 28, "adr": 0, "rev": 0}, {"month": "Jun 2026", "rooms": 2, "adr": 0, "rev": 0}],
+    stayBudgetMay:171386,
+    liveBudgetMay:43596,
+    resid:{"total_charges": 692469.32, "collected": 574979.45, "collected_pct": 83.0, "unpaid_curr": 117489.87, "unpaid_pct": 17.0, "units_unpaid": 70, "prior_unpaid": 54598.79, "total_unpaid": 172088.66},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 40, "occ": 29, "adr": 197},
+    liveHeader:{"keys": 40, "occ": 22, "adr": 130},
+    lto:{
+      combined:{count:9,gross_d:-2075,gross_pct:-10.09,net_d:-1917,net_pct:-9.40},
+      new:{count:7,gross_d:-2075,gross_pct:-13.43,net_d:-1917,net_pct:-12.54},
+      renewal:{count:2,gross_d:0,gross_pct:0.00,net_d:0,net_pct:0.00},
+      detail:[
+        {type:"New",fp:"0B1B*",unit:"610",sqft:504,app_date:"2026-04-30",lease_start:"2026-05-15",term:7,curr_gross:1421,conc:0,curr_eff:1421,prev_gross:1436,prev_eff:1436,vac_days:45,gross_to_d:-15,gross_to_pct:-1.0,net_to_d:-15,net_to_pct:-1.0},
+        {type:"New",fp:"0B1B*",unit:"S155",sqft:579,app_date:"2026-04-28",lease_start:"2026-05-06",term:15,curr_gross:1510,conc:0,curr_eff:1510,prev_gross:1786,prev_eff:1786,vac_days:134,gross_to_d:-276,gross_to_pct:-15.5,net_to_d:-276,net_to_pct:-15.5},
+        {type:"Renewal",fp:"0B1B*",unit:"S152",sqft:864,app_date:"2026-04-28",lease_start:"2026-05-28",term:12,curr_gross:1899,conc:0,curr_eff:1899,prev_gross:1899,prev_eff:1899,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+        {type:"New",fp:"1B1B*",unit:"206",sqft:737,app_date:"2026-04-29",lease_start:"2026-05-29",term:15,curr_gross:1756,conc:0,curr_eff:1756,prev_gross:1810,prev_eff:1810,vac_days:44,gross_to_d:-54,gross_to_pct:-3.0,net_to_d:-54,net_to_pct:-3.0},
+        {type:"New",fp:"1B1B*",unit:"641",sqft:734,app_date:"2026-05-02",lease_start:"2026-07-06",term:13,curr_gross:1722,conc:0,curr_eff:1722,prev_gross:2042,prev_eff:1884,vac_days:9,gross_to_d:-320,gross_to_pct:-15.7,net_to_d:-162,net_to_pct:-8.6},
+        {type:"New",fp:"1B1B*",unit:"S234",sqft:744,app_date:"2026-05-02",lease_start:"2026-05-23",term:13,curr_gross:1853,conc:0,curr_eff:1853,prev_gross:2067,prev_eff:2067,vac_days:28,gross_to_d:-214,gross_to_pct:-10.4,net_to_d:-214,net_to_pct:-10.4},
+        {type:"New",fp:"2B2B*",unit:"202",sqft:1465,app_date:"2026-04-28",lease_start:"2026-05-01",term:15,curr_gross:2804,conc:0,curr_eff:2804,prev_gross:3867,prev_eff:3867,vac_days:75,gross_to_d:-1063,gross_to_pct:-27.5,net_to_d:-1063,net_to_pct:-27.5},
+        {type:"New",fp:"2B2B*",unit:"305",sqft:1131,app_date:"2026-04-28",lease_start:"2026-05-08",term:15,curr_gross:2307,conc:0,curr_eff:2307,prev_gross:2440,prev_eff:2440,vac_days:45,gross_to_d:-133,gross_to_pct:-5.5,net_to_d:-133,net_to_pct:-5.5},
+        {type:"Renewal",fp:"2B2B*",unit:"761",sqft:1166,app_date:"2026-04-28",lease_start:"2026-06-04",term:12,curr_gross:3208,conc:0,curr_eff:3208,prev_gross:3208,prev_eff:3208,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+      ]
+    },
+    retail:{
+      total_charges:104034.84,owed_0_30:52889.97,owed_31_60:39817.76,owed_61_90:6759.14,owed_90plus:4567.97,prepay:-21424.58,total_owed:82610.26,
+      tenants:[
+        {unit:"100",name:"Prevail Coffee, LLC",charges:2817.73,owed_0_30:2781,owed_31_60:36.73,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:2817.73},
+        {unit:"101",name:"The Salty Donut",charges:27362.09,owed_0_30:6950.73,owed_31_60:9084.25,owed_61_90:6759.14,owed_90plus:4567.97,prepay:0,total_owed:27362.09,delinquent:true},
+        {unit:"103",name:"Yeppa",charges:19114.60,owed_0_30:11741.72,owed_31_60:7372.88,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:19114.60},
+        {unit:"105",name:"Savi Provisions",charges:22175.31,owed_0_30:12901.41,owed_31_60:9273.90,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:22175.31},
+        {unit:"107",name:"Sweetgreen Georgia, LLC",charges:0,owed_0_30:0,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:-21424.58,total_owed:-21424.58},
+        {unit:"109",name:"Ghee Indian",charges:32565.11,owed_0_30:18515.11,owed_31_60:14050,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:32565.11},
+      ]
+    }
+  },
+  "SoBro": {
+    label:"Sentral SoBro", city:"Nashville, TN", units:159,
+    hasLive:false, hasRetail:true,
+    weeks:[
+      {week:"May 3",units:159,curr_occ:84.9,budg_occ:96.0,occ_14d:86.2,occ_30d:86.2,occ_60d:83.6,lse_14d:15,lse_30d:15,lse_60d:19,mkt_rent:3006,inplace_rent:3031,eff_rent:3020,atr_pct:16.4,atr_num:26,leads:6,tours:2,net_leases:-1,gross_leases:0,renews:3,ntv:1,t4_net:1,close_pct:-50.0,lead_to_tour:33.3},
+      {week:"Apr 26",units:159,curr_occ:84.9,budg_occ:95.8,occ_14d:86.8,occ_30d:86.8,occ_60d:84.9,lse_14d:14,lse_30d:14,lse_60d:17,mkt_rent:3041,inplace_rent:3022,eff_rent:3011,atr_pct:15.1,atr_num:24,leads:5,tours:1,net_leases:1,gross_leases:1,renews:1,ntv:0,t4_net:1,close_pct:100.0,lead_to_tour:20.0},
+      {week:"Apr 19",units:159,curr_occ:85.5,budg_occ:95.8,occ_14d:86.2,occ_30d:86.2,occ_60d:83.6,lse_14d:15,lse_30d:15,lse_60d:19,mkt_rent:3078,inplace_rent:3013,eff_rent:3002,atr_pct:15.7,atr_num:25,leads:10,tours:3,net_leases:2,gross_leases:2,renews:2,ntv:0,t4_net:0,close_pct:66.7,lead_to_tour:30.0},
+      {week:"Apr 12",units:159,curr_occ:85.5,budg_occ:95.8,occ_14d:84.9,occ_30d:84.9,occ_60d:83.0,lse_14d:17,lse_30d:17,lse_60d:20,mkt_rent:3108,inplace_rent:2994,eff_rent:2983,atr_pct:16.4,atr_num:26,leads:14,tours:4,net_leases:0,gross_leases:1,renews:1,ntv:2,t4_net:0,close_pct:0.0,lead_to_tour:28.6},
+    ],
+    stay:{rooms:14328,occ:28,adr:179,revpar:50,revenue:2569462,remain:36772,var_rooms:-17032,var_occ:-38,var_adr:6,var_rev:-2865882},
+    live:null,
+    stayPickup:{may:{rooms:38,adr:158,rev:5999},jun:{rooms:16,adr:275,rev:4401}},
+    livePickup:null,
+    stayMTD:{rooms:2529,occ:58.3,adr:193,revpar:112,revenue:487647},
+    liveMTD:null,
+    stayMonthly:[{"month": "Jan 2026", "rooms": 1079, "occ": 24.9, "adr": 114, "revpar": 28, "revenue": 122616}, {"month": "Feb 2026", "rooms": 1926, "occ": 49.1, "adr": 153, "revpar": 75, "revenue": 294393}, {"month": "Mar 2026", "rooms": 2791, "occ": 64.3, "adr": 167, "revpar": 107, "revenue": 464819}, {"month": "Apr 2026", "rooms": 2749, "occ": 65.5, "adr": 177, "revpar": 116, "revenue": 487823}, {"month": "May 2026", "rooms": 2529, "occ": 58.3, "adr": 193, "revpar": 112, "revenue": 487647}, {"month": "Jun 2026", "rooms": 1914, "occ": 45.6, "adr": 226, "revpar": 103, "revenue": 433390}, {"month": "Jul 2026", "rooms": 550, "occ": 12.7, "adr": 189, "revpar": 24, "revenue": 104155}, {"month": "Aug 2026", "rooms": 228, "occ": 5.3, "adr": 192, "revpar": 10, "revenue": 43763}, {"month": "Sep 2026", "rooms": 331, "occ": 7.9, "adr": 236, "revpar": 19, "revenue": 78083}, {"month": "Oct 2026", "rooms": 114, "occ": 2.6, "adr": 299, "revpar": 8, "revenue": 34081}, {"month": "Nov 2026", "rooms": 63, "occ": 1.5, "adr": 183, "revpar": 3, "revenue": 11533}, {"month": "Dec 2026", "rooms": 54, "occ": 1.2, "adr": 133, "revpar": 2, "revenue": 7160}],
+    liveMonthly:null,
+    stayPickupFull:[{"month": "May 2026", "rooms": 38, "adr": 158, "rev": 5999}, {"month": "Jun 2026", "rooms": 16, "adr": 275, "rev": 4401}, {"month": "Jul 2026", "rooms": 13, "adr": 156, "rev": 2029}, {"month": "Aug 2026", "rooms": 3, "adr": 139, "rev": 417}, {"month": "Sep 2026", "rooms": 4, "adr": 188, "rev": 752}, {"month": "Oct 2026", "rooms": 12, "adr": 244, "rev": 2926}],
+    livePickupFull:null,
+    stayBudgetMay:550977,
+    liveBudgetMay:null,
+    resid:{"total_charges": 408087.71, "collected": 336499.29, "collected_pct": 82.5, "unpaid_curr": 71588.42, "unpaid_pct": 17.5, "units_unpaid": 33, "prior_unpaid": 38230.87, "total_unpaid": 109819.29},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 140, "occ": 58, "adr": 193},
+    liveHeader:null,
+    lto:{
+      combined:{count:3,gross_d:34,gross_pct:0.37,net_d:34,net_pct:0.37},
+      new:{count:0,gross_d:0,gross_pct:0,net_d:0,net_pct:0},
+      renewal:{count:3,gross_d:34,gross_pct:0.37,net_d:34,net_pct:0.37},
+      detail:[
+        {type:"Renewal",fp:"1B1B*",unit:"L-1106",sqft:638,app_date:"2026-04-29",lease_start:"2026-07-30",term:12,curr_gross:2534,conc:0,curr_eff:2534,prev_gross:2534,prev_eff:2534,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+        {type:"Renewal",fp:"1B1B*",unit:"L-927",sqft:593,app_date:"2026-05-02",lease_start:"2026-07-01",term:12,curr_gross:2460,conc:0,curr_eff:2460,prev_gross:2426,prev_eff:2426,vac_days:0,gross_to_d:34,gross_to_pct:1.4,net_to_d:34,net_to_pct:1.4},
+        {type:"Renewal",fp:"2B2B*",unit:"L-710",sqft:1181,app_date:"2026-05-01",lease_start:"2026-07-17",term:12,curr_gross:4124,conc:0,curr_eff:4124,prev_gross:4124,prev_eff:4124,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+      ]
+    },
+    retail:{
+      total_charges:3659.35,owed_0_30:3659.35,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:-1481.31,total_owed:2178.04,
+      tenants:[
+        {unit:"532",name:"Sixt Rent A Car LLC",charges:0,owed_0_30:0,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:-1481.31,total_owed:-1481.31},
+        {unit:"534",name:"LJ Legacy LLC",charges:3659.35,owed_0_30:3659.35,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:3659.35},
+      ]
+    }
+  },
+  "DTLA": {
+    label:"Sentral DTLA", city:"Los Angeles, CA", units:541,
+    hasLive:true, hasRetail:true,
+    weeks:[
+      {week:"May 3",units:541,curr_occ:93.0,budg_occ:93.4,occ_14d:91.7,occ_30d:90.4,occ_60d:89.1,lse_14d:5,lse_30d:13,lse_60d:20,mkt_rent:2859,inplace_rent:3216,eff_rent:2933,atr_pct:9.6,atr_num:52,leads:130,tours:21,net_leases:3,gross_leases:8,renews:3,ntv:1,t4_net:3,close_pct:14.3,lead_to_tour:16.2},
+      {week:"Apr 26",units:540,curr_occ:93.3,budg_occ:93.2,occ_14d:91.7,occ_30d:90.4,occ_60d:88.7,lse_14d:6,lse_30d:14,lse_60d:23,mkt_rent:2824,inplace_rent:3200,eff_rent:2920,atr_pct:9.3,atr_num:50,leads:129,tours:12,net_leases:4,gross_leases:4,renews:3,ntv:6,t4_net:4,close_pct:33.3,lead_to_tour:9.3},
+      {week:"Apr 19",units:540,curr_occ:93.1,budg_occ:93.2,occ_14d:92.0,occ_30d:90.9,occ_60d:89.6,lse_14d:4,lse_30d:11,lse_60d:18,mkt_rent:2811,inplace_rent:3205,eff_rent:2927,atr_pct:8.9,atr_num:48,leads:112,tours:24,net_leases:1,gross_leases:3,renews:1,ntv:9,t4_net:3,close_pct:4.2,lead_to_tour:21.4},
+      {week:"Apr 12",units:540,curr_occ:93.7,budg_occ:93.2,occ_14d:93.5,occ_30d:92.2,occ_60d:91.5,lse_14d:-4,lse_30d:4,lse_60d:8,mkt_rent:2823,inplace_rent:3203,eff_rent:2922,atr_pct:7.6,atr_num:41,leads:94,tours:7,net_leases:1,gross_leases:4,renews:2,ntv:5,t4_net:5,close_pct:14.3,lead_to_tour:7.4},
+    ],
+    stay:{rooms:2312,occ:21,adr:143,revpar:30,revenue:330498,remain:null,var_rooms:-5389,var_occ:-49,var_adr:19,var_rev:-627477},
+    live:{rooms:2312,occ:21,adr:143,revpar:30,revenue:330498,var_rooms:-5389,var_occ:-49,var_adr:19,var_rev:-627477},
+    stayPickup:{may:{rooms:0,adr:0,rev:0},jun:{rooms:0,adr:0,rev:0}},
+    livePickup:{may:{rooms:0,adr:0,rev:0},jun:{rooms:0,adr:0,rev:0}},
+    stayMTD:null,
+    liveMTD:{rooms:270,occ:25.6,adr:155,revpar:40,revenue:41979},
+    stayMonthly:null,
+    liveMonthly:[{"month": "Jan 2026", "rooms": 491, "occ": 46.6, "adr": 116, "revpar": 54, "revenue": 57119}, {"month": "Feb 2026", "rooms": 398, "occ": 41.8, "adr": 122, "revpar": 51, "revenue": 48655}, {"month": "Mar 2026", "rooms": 315, "occ": 29.9, "adr": 137, "revpar": 41, "revenue": 43271}, {"month": "Apr 2026", "rooms": 376, "occ": 36.9, "adr": 150, "revpar": 55, "revenue": 56563}, {"month": "May 2026", "rooms": 270, "occ": 25.6, "adr": 155, "revpar": 40, "revenue": 41979}, {"month": "Jun 2026", "rooms": 80, "occ": 7.8, "adr": 193, "revpar": 15, "revenue": 15452}, {"month": "Jul 2026", "rooms": 86, "occ": 8.2, "adr": 179, "revpar": 15, "revenue": 15387}, {"month": "Aug 2026", "rooms": 62, "occ": 5.9, "adr": 173, "revpar": 10, "revenue": 10701}, {"month": "Sep 2026", "rooms": 60, "occ": 5.9, "adr": 173, "revpar": 10, "revenue": 10386}, {"month": "Oct 2026", "rooms": 84, "occ": 8.0, "adr": 163, "revpar": 13, "revenue": 13662}, {"month": "Nov 2026", "rooms": 60, "occ": 5.9, "adr": 178, "revpar": 10, "revenue": 10657}, {"month": "Dec 2026", "rooms": 30, "occ": 2.8, "adr": 222, "revpar": 6, "revenue": 6666}],
+    stayPickupFull:[],
+    livePickupFull:null,
+    stayBudgetMay:957975,
+    liveBudgetMay:94700,
+    resid:{"total_charges": 1651019.83, "collected": 1273549.63, "collected_pct": 77.1, "unpaid_curr": 377470.2, "unpaid_pct": 22.9, "units_unpaid": 152, "prior_unpaid": 872762.01, "total_unpaid": 1250232.21},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:null,
+    liveHeader:{"keys": 21, "occ": 26, "adr": 155},
+    lto:{
+      combined:{count:8,gross_d:-355,gross_pct:-1.45,net_d:502,net_pct:2.30},
+      new:{count:5,gross_d:-486,gross_pct:-2.91,net_d:-127,net_pct:-0.85},
+      renewal:{count:3,gross_d:131,gross_pct:1.69,net_d:629,net_pct:9.10},
+      detail:[
+        {type:"New",fp:"1B1B*",unit:"1618",sqft:837,app_date:"2026-04-27",lease_start:"2026-05-09",term:3,curr_gross:2884,conc:159,curr_eff:2831,prev_gross:2935,prev_eff:2715,vac_days:92,gross_to_d:-51,gross_to_pct:-1.7,net_to_d:116,net_to_pct:4.3},
+        {type:"Renewal",fp:"1B1B*",unit:"1006",sqft:693,app_date:"2026-05-01",lease_start:"2026-05-28",term:12,curr_gross:2705,conc:1000,curr_eff:2622,prev_gross:2705,prev_eff:2170,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:452,net_to_pct:20.8},
+        {type:"Renewal",fp:"1B1B*",unit:"1118",sqft:837,app_date:"2026-05-02",lease_start:"2026-06-10",term:12,curr_gross:3051,conc:500,curr_eff:3010,prev_gross:2959,prev_eff:2918,vac_days:0,gross_to_d:92,gross_to_pct:3.1,net_to_d:92,net_to_pct:3.2},
+        {type:"New",fp:"2B2B*",unit:"2102",sqft:1263,app_date:"2026-05-02",lease_start:"2026-05-30",term:14,curr_gross:3269,conc:0,curr_eff:3269,prev_gross:4385,prev_eff:3565,vac_days:141,gross_to_d:-1116,gross_to_pct:-25.5,net_to_d:-296,net_to_pct:-8.3},
+        {type:"New",fp:"Penthouse",unit:"2815",sqft:1747,app_date:"2026-04-27",lease_start:"2026-05-01",term:15,curr_gross:6396,conc:19191,curr_eff:5117,prev_gross:5393,prev_eff:5177,vac_days:678,gross_to_d:1003,gross_to_pct:18.6,net_to_d:-60,net_to_pct:-1.2},
+        {type:"New",fp:"0B1B*",unit:"723",sqft:479,app_date:"2026-04-30",lease_start:"2026-05-01",term:13,curr_gross:1827,conc:0,curr_eff:1827,prev_gross:2075,prev_eff:1723,vac_days:24,gross_to_d:-248,gross_to_pct:-12.0,net_to_d:104,net_to_pct:6.0},
+        {type:"New",fp:"0B1B*",unit:"823",sqft:479,app_date:"2026-04-28",lease_start:"2026-05-03",term:12,curr_gross:1840,conc:1419,curr_eff:1722,prev_gross:1914,prev_eff:1713,vac_days:54,gross_to_d:-74,gross_to_pct:-3.9,net_to_d:9,net_to_pct:0.5},
+        {type:"Renewal",fp:"0B1B*",unit:"822",sqft:479,app_date:"2026-05-01",lease_start:"2026-06-28",term:12,curr_gross:2144,conc:2804,curr_eff:1911,prev_gross:2105,prev_eff:1826,vac_days:0,gross_to_d:39,gross_to_pct:1.9,net_to_d:85,net_to_pct:4.7},
+      ]
+    },
+    retail:{
+      total_charges:3100.74,owed_0_30:3100.74,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:3100.74,
+      tenants:[
+        {unit:"3",name:"Best Coffee Sentral, DTLA, LLC",charges:509.50,owed_0_30:509.50,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:509.50},
+        {unit:"5",name:"Jian Chang Jiang",charges:2591.24,owed_0_30:2591.24,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:2591.24},
+      ]
+    }
+  },
+  "Wynwood": {
+    label:"Sentral Wynwood", city:"Miami, FL", units:1,
+    hasLive:false, hasRetail:true,
+    weeks:[
+      {week:"Apr 19",units:1,curr_occ:0.0,budg_occ:0,occ_14d:0,occ_30d:0,occ_60d:0,lse_14d:0,lse_30d:0,lse_60d:0,mkt_rent:3665,inplace_rent:null,eff_rent:null,atr_pct:100,atr_num:1,leads:20,tours:0,net_leases:0,gross_leases:0,renews:0,ntv:0,t4_net:0,close_pct:0,lead_to_tour:0},
+      {week:"Apr 12",units:1,curr_occ:0.0,budg_occ:0,occ_14d:0,occ_30d:0,occ_60d:0,lse_14d:0,lse_30d:0,lse_60d:0,mkt_rent:3665,inplace_rent:null,eff_rent:null,atr_pct:100,atr_num:1,leads:23,tours:0,net_leases:0,gross_leases:0,renews:0,ntv:0,t4_net:0,close_pct:0,lead_to_tour:0},
+    ],
+    stay:{rooms:17526,occ:37,adr:241,revpar:90,revenue:4222062,remain:29551,var_rooms:-17021,var_occ:-36,var_adr:38,var_rev:-2778151},
+    live:null,
+    stayPickup:{may:{rooms:20,adr:326,rev:6513},jun:{rooms:12,adr:274,rev:3286}},
+    livePickup:null,
+    stayMTD:{rooms:1984,occ:49.6,adr:208,revpar:103,revenue:413469},
+    liveMTD:null,
+    stayMonthly:[{"month": "Jan 2026", "rooms": 3289, "occ": 82.2, "adr": 244, "revpar": 201, "revenue": 802662}, {"month": "Feb 2026", "rooms": 3059, "occ": 84.7, "adr": 267, "revpar": 226, "revenue": 816673}, {"month": "Mar 2026", "rooms": 3692, "occ": 92.3, "adr": 268, "revpar": 247, "revenue": 988432}, {"month": "Apr 2026", "rooms": 3367, "occ": 87.0, "adr": 217, "revpar": 188, "revenue": 729081}, {"month": "May 2026", "rooms": 1984, "occ": 49.6, "adr": 208, "revpar": 103, "revenue": 413469}, {"month": "Jun 2026", "rooms": 603, "occ": 15.6, "adr": 268, "revpar": 42, "revenue": 161512}, {"month": "Jul 2026", "rooms": 463, "occ": 11.6, "adr": 223, "revpar": 26, "revenue": 103184}, {"month": "Aug 2026", "rooms": 426, "occ": 10.7, "adr": 153, "revpar": 16, "revenue": 65082}, {"month": "Sep 2026", "rooms": 199, "occ": 5.1, "adr": 162, "revpar": 8, "revenue": 32170}, {"month": "Oct 2026", "rooms": 166, "occ": 4.2, "adr": 235, "revpar": 10, "revenue": 38979}, {"month": "Nov 2026", "rooms": 112, "occ": 2.9, "adr": 205, "revpar": 6, "revenue": 22992}, {"month": "Dec 2026", "rooms": 166, "occ": 4.2, "adr": 288, "revpar": 12, "revenue": 47826}],
+    liveMonthly:null,
+    stayPickupFull:[{"month": "May 2026", "rooms": 20, "adr": 326, "rev": 6513}, {"month": "Jun 2026", "rooms": 12, "adr": 274, "rev": 3286}, {"month": "Jul 2026", "rooms": 3, "adr": 135, "rev": 406}, {"month": "Aug 2026", "rooms": 34, "adr": 141, "rev": 4802}, {"month": "Sep 2026", "rooms": 10, "adr": 143, "rev": 1426}, {"month": "Oct 2026", "rooms": -3, "adr": -68, "rev": 204}, {"month": "Nov 2026", "rooms": -10, "adr": 204, "rev": -2041}, {"month": "Dec 2026", "rooms": -1, "adr": -61, "rev": 61}],
+    livePickupFull:null,
+    stayBudgetMay:478334,
+    liveBudgetMay:null,
+    resid:{"total_charges": 134869.35, "collected": 122036.26, "collected_pct": 90.5, "unpaid_curr": 12833.09, "unpaid_pct": 9.5, "units_unpaid": 4, "prior_unpaid": 250.0, "total_unpaid": 13083.09},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 129, "occ": 50, "adr": 208},
+    liveHeader:null,
+    lto:null,
+    retail:{
+      total_charges:24577.36,owed_0_30:24577.36,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:-26076.06,total_owed:-1498.70,
+      tenants:[
+        {unit:"1",name:"Best Chivito LLC",charges:24560.31,owed_0_30:24560.31,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:24560.31},
+        {unit:"6",name:"Biocube",charges:0,owed_0_30:0,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:-26076.06,total_owed:-26076.06},
+        {unit:"8",name:"NU Artworks LLC",charges:17.05,owed_0_30:17.05,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:17.05},
+      ]
+    }
+  },
+  "Union Station": {
+    label:"Sentral Union Station", city:"Denver, CO", units:489,
+    hasLive:true, hasRetail:true,
+    weeks:[
+      {week:"May 3",units:489,curr_occ:93.3,budg_occ:93.6,occ_14d:92.2,occ_30d:90.0,occ_60d:87.3,lse_14d:11,lse_30d:17,lse_60d:30,mkt_rent:2359,inplace_rent:2491,eff_rent:2341,atr_pct:12.5,atr_num:61,leads:45,tours:18,net_leases:6,gross_leases:8,renews:3,ntv:7,t4_net:2,close_pct:33.3,lead_to_tour:40.0},
+      {week:"Apr 26",units:489,curr_occ:93.7,budg_occ:94.5,occ_14d:93.0,occ_30d:91.2,occ_60d:87.9,lse_14d:7,lse_30d:11,lse_60d:27,mkt_rent:2340,inplace_rent:2487,eff_rent:2331,atr_pct:12.3,atr_num:60,leads:43,tours:12,net_leases:2,gross_leases:3,renews:5,ntv:5,t4_net:3,close_pct:16.7,lead_to_tour:27.9},
+      {week:"Apr 19",units:489,curr_occ:93.3,budg_occ:94.5,occ_14d:93.7,occ_30d:92.4,occ_60d:89.4,lse_14d:4,lse_30d:5,lse_60d:20,mkt_rent:2318,inplace_rent:2476,eff_rent:2323,atr_pct:11.5,atr_num:56,leads:36,tours:15,net_leases:3,gross_leases:3,renews:4,ntv:4,t4_net:2,close_pct:20.0,lead_to_tour:41.7},
+      {week:"Apr 12",units:489,curr_occ:93.0,budg_occ:94.5,occ_14d:93.3,occ_30d:92.4,occ_60d:90.2,lse_14d:6,lse_30d:5,lse_60d:16,mkt_rent:2313,inplace_rent:2482,eff_rent:2328,atr_pct:11.2,atr_num:55,leads:49,tours:16,net_leases:4,gross_leases:4,renews:3,ntv:4,t4_net:2,close_pct:25.0,lead_to_tour:32.7},
+    ],
+    stay:{rooms:7168,occ:39,adr:208,revpar:82,revenue:1493774,remain:11064,var_rooms:-7630,var_occ:-42,var_adr:1,var_rev:-1574631},
+    live:{rooms:3802,occ:26,adr:143,revpar:37,revenue:543362,var_rooms:-4545,var_occ:-31,var_adr:18,var_rev:-497184},
+    stayPickup:{may:{rooms:24,adr:203,rev:4869},jun:{rooms:78,adr:245,rev:19149}},
+    livePickup:{may:{rooms:26,adr:123,rev:3205},jun:{rooms:57,adr:237,rev:13490}},
+    stayMTD:{rooms:962,occ:62.1,adr:242,revpar:150,revenue:232403},
+    liveMTD:{rooms:521,occ:42.0,adr:144,revpar:61,revenue:75267},
+    stayMonthly:[{"month": "Jan 2026", "rooms": 1115, "occ": 71.9, "adr": 149, "revpar": 107, "revenue": 166329}, {"month": "Feb 2026", "rooms": 1034, "occ": 73.9, "adr": 167, "revpar": 124, "revenue": 173132}, {"month": "Mar 2026", "rooms": 1169, "occ": 75.4, "adr": 216, "revpar": 163, "revenue": 252433}, {"month": "Apr 2026", "rooms": 1100, "occ": 73.3, "adr": 193, "revpar": 141, "revenue": 212034}, {"month": "May 2026", "rooms": 962, "occ": 62.1, "adr": 242, "revpar": 150, "revenue": 232403}, {"month": "Jun 2026", "rooms": 564, "occ": 37.6, "adr": 246, "revpar": 92, "revenue": 138636}, {"month": "Jul 2026", "rooms": 490, "occ": 31.6, "adr": 255, "revpar": 80, "revenue": 124736}, {"month": "Aug 2026", "rooms": 390, "occ": 25.2, "adr": 259, "revpar": 65, "revenue": 101010}, {"month": "Sep 2026", "rooms": 248, "occ": 16.5, "adr": 275, "revpar": 45, "revenue": 68146}, {"month": "Oct 2026", "rooms": 48, "occ": 3.1, "adr": 290, "revpar": 9, "revenue": 13931}, {"month": "Nov 2026", "rooms": 25, "occ": 1.7, "adr": 224, "revpar": 4, "revenue": 5611}, {"month": "Dec 2026", "rooms": 23, "occ": 1.5, "adr": 234, "revpar": 3, "revenue": 5374}],
+    liveMonthly:[{"month": "Jan 2026", "rooms": 612, "occ": 49.4, "adr": 127, "revpar": 62, "revenue": 77483}, {"month": "Feb 2026", "rooms": 662, "occ": 59.1, "adr": 133, "revpar": 79, "revenue": 87996}, {"month": "Mar 2026", "rooms": 777, "occ": 62.7, "adr": 155, "revpar": 97, "revenue": 120709}, {"month": "Apr 2026", "rooms": 758, "occ": 63.2, "adr": 134, "revpar": 85, "revenue": 101950}, {"month": "May 2026", "rooms": 521, "occ": 42.0, "adr": 144, "revpar": 61, "revenue": 75267}, {"month": "Jun 2026", "rooms": 279, "occ": 23.2, "adr": 170, "revpar": 39, "revenue": 47292}, {"month": "Jul 2026", "rooms": 130, "occ": 10.5, "adr": 163, "revpar": 17, "revenue": 21184}, {"month": "Aug 2026", "rooms": 38, "occ": 3.1, "adr": 180, "revpar": 6, "revenue": 6853}, {"month": "Sep 2026", "rooms": 25, "occ": 2.1, "adr": 185, "revpar": 4, "revenue": 4628}],
+    stayPickupFull:[{"month": "May 2026", "rooms": 24, "adr": 203, "rev": 4869}, {"month": "Jun 2026", "rooms": 78, "adr": 245, "rev": 19149}, {"month": "Jul 2026", "rooms": 10, "adr": 184, "rev": 1840}, {"month": "Aug 2026", "rooms": 4, "adr": 194, "rev": 775}],
+    livePickupFull:[{"month": "May 2026", "rooms": 26, "adr": 123, "rev": 3205}, {"month": "Jun 2026", "rooms": 57, "adr": 237, "rev": 13490}],
+    stayBudgetMay:264269,
+    liveBudgetMay:120538,
+    resid:{"total_charges": 1100121.67, "collected": 934439.79, "collected_pct": 84.9, "unpaid_curr": 165681.88, "unpaid_pct": 15.1, "units_unpaid": 125, "prior_unpaid": 13400.14, "total_unpaid": 179082.02},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 50, "occ": 62, "adr": 242},
+    liveHeader:{"keys": 40, "occ": 42, "adr": 144},
+    lto:{
+      combined:{count:10,gross_d:886,gross_pct:3.36,net_d:3488,net_pct:15.18},
+      new:{count:7,gross_d:658,gross_pct:3.94,net_d:1744,net_pct:11.78},
+      renewal:{count:3,gross_d:228,gross_pct:2.35,net_d:1744,net_pct:21.34},
+      detail:[
+        {type:"New",fp:"0B1B*",unit:"C-405",sqft:516,app_date:"2026-04-27",lease_start:"2026-05-30",term:12,curr_gross:1714,conc:3428,curr_eff:1429,prev_gross:1700,prev_eff:1700,vac_days:9,gross_to_d:14,gross_to_pct:0.8,net_to_d:-271,net_to_pct:-15.9},
+        {type:"New",fp:"0B1B*",unit:"E-812",sqft:586,app_date:"2026-04-27",lease_start:"2026-05-02",term:12,curr_gross:1799,conc:3598,curr_eff:1500,prev_gross:1776,prev_eff:1540,vac_days:18,gross_to_d:23,gross_to_pct:1.3,net_to_d:-40,net_to_pct:-2.6},
+        {type:"New",fp:"0B1B-U*",unit:"C-609",sqft:678,app_date:"2026-04-28",lease_start:"2026-07-01",term:15,curr_gross:2260,conc:0,curr_eff:2260,prev_gross:1863,prev_eff:1708,vac_days:32,gross_to_d:397,gross_to_pct:21.3,net_to_d:552,net_to_pct:32.3},
+        {type:"New",fp:"0B1B-U*",unit:"C-713",sqft:676,app_date:"2026-05-01",lease_start:"2026-05-02",term:9,curr_gross:1816,conc:0,curr_eff:1816,prev_gross:1741,prev_eff:1741,vac_days:49,gross_to_d:75,gross_to_pct:4.3,net_to_d:75,net_to_pct:4.3},
+        {type:"Renewal",fp:"1B1B-1.5B*",unit:"E-609",sqft:742,app_date:"2026-05-02",lease_start:"2026-07-07",term:12,curr_gross:2396,conc:0,curr_eff:2396,prev_gross:2327,prev_eff:2037,vac_days:0,gross_to_d:69,gross_to_pct:3.0,net_to_d:359,net_to_pct:17.6},
+        {type:"New",fp:"2B2B-2.5B*",unit:"C-1302",sqft:1280,app_date:"2026-05-02",lease_start:"2026-06-10",term:12,curr_gross:3396,conc:0,curr_eff:3396,prev_gross:3384,prev_eff:2820,vac_days:7,gross_to_d:12,gross_to_pct:0.4,net_to_d:576,net_to_pct:20.4},
+        {type:"New",fp:"2B2B-2.5B*",unit:"C-619",sqft:1154,app_date:"2026-05-02",lease_start:"2026-05-22",term:15,curr_gross:3210,conc:0,curr_eff:3210,prev_gross:2973,prev_eff:2478,vac_days:7,gross_to_d:237,gross_to_pct:8.0,net_to_d:732,net_to_pct:29.5},
+        {type:"New",fp:"2B2B-2.5B*",unit:"E-401",sqft:1058,app_date:"2026-04-27",lease_start:"2026-04-28",term:15,curr_gross:3150,conc:3150,curr_eff:2940,prev_gross:3250,prev_eff:2820,vac_days:17,gross_to_d:-100,gross_to_pct:-3.1,net_to_d:120,net_to_pct:4.3},
+        {type:"Renewal",fp:"2B2B-2.5B*",unit:"C-1202",sqft:1280,app_date:"2026-04-27",lease_start:"2026-04-30",term:15,curr_gross:3741,conc:0,curr_eff:3741,prev_gross:3656,prev_eff:3047,vac_days:0,gross_to_d:85,gross_to_pct:2.3,net_to_d:694,net_to_pct:22.8},
+        {type:"Renewal",fp:"2B2B-2.5B*",unit:"E-1108",sqft:1492,app_date:"2026-04-27",lease_start:"2026-06-29",term:12,curr_gross:3778,conc:0,curr_eff:3778,prev_gross:3704,prev_eff:3087,vac_days:0,gross_to_d:74,gross_to_pct:2.0,net_to_d:691,net_to_pct:22.4},
+      ]
+    },
+    retail:{
+      total_charges:520891.63,owed_0_30:279882.02,owed_31_60:241009.61,owed_61_90:0,owed_90plus:0,prepay:-172847.89,total_owed:348043.74,
+      tenants:[
+        {unit:"1",name:"Whole Foods Market",charges:433637.92,owed_0_30:221851.27,owed_31_60:211786.65,owed_61_90:0,owed_90plus:0,prepay:-172847.89,total_owed:260790.03},
+        {unit:"2",name:"CVS Store #10959",charges:80332.42,owed_0_30:51109.46,owed_31_60:29222.96,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:80332.42},
+        {unit:"3",name:"Gyu-Kaku",charges:6921.29,owed_0_30:6921.29,owed_31_60:0,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:6921.29},
+      ]
+    }
+  },
+  "Old Town": {
+    label:"Sentral Old Town", city:"Scottsdale, AZ", units:94,
+    hasLive:false, hasRetail:false,
+    weeks:[
+      {week:"May 3",units:94,curr_occ:90.4,budg_occ:95.2,occ_14d:89.4,occ_30d:88.3,occ_60d:88.3,lse_14d:5,lse_30d:6,lse_60d:6,mkt_rent:2601,inplace_rent:2726,eff_rent:2688,atr_pct:10.6,atr_num:10,leads:51,tours:7,net_leases:2,gross_leases:3,renews:1,ntv:1,t4_net:0,close_pct:28.6,lead_to_tour:13.7},
+      {week:"Apr 26",units:94,curr_occ:91.5,budg_occ:95.4,occ_14d:90.4,occ_30d:89.4,occ_60d:89.4,lse_14d:4,lse_30d:5,lse_60d:5,mkt_rent:2608,inplace_rent:2719,eff_rent:2682,atr_pct:10.6,atr_num:10,leads:76,tours:8,net_leases:0,gross_leases:0,renews:0,ntv:0,t4_net:0,close_pct:0,lead_to_tour:10.5},
+      {week:"Apr 19",units:94,curr_occ:91.5,budg_occ:95.4,occ_14d:90.4,occ_30d:89.4,occ_60d:89.4,lse_14d:4,lse_30d:5,lse_60d:5,mkt_rent:2601,inplace_rent:2719,eff_rent:2682,atr_pct:10.6,atr_num:10,leads:81,tours:7,net_leases:0,gross_leases:0,renews:0,ntv:0,t4_net:0,close_pct:0,lead_to_tour:8.6},
+      {week:"Apr 12",units:94,curr_occ:90.4,budg_occ:95.4,occ_14d:91.5,occ_30d:90.4,occ_60d:89.4,lse_14d:3,lse_30d:4,lse_60d:5,mkt_rent:2602,inplace_rent:2685,eff_rent:2648,atr_pct:10.6,atr_num:10,leads:60,tours:9,net_leases:0,gross_leases:0,renews:0,ntv:0,t4_net:1,close_pct:0,lead_to_tour:15.0},
+    ],
+    stay:{rooms:8496,occ:35,adr:207,revpar:73,revenue:1758898,remain:15594,var_rooms:-8580,var_occ:-36,var_adr:41,var_rev:-1067716},
+    live:null,
+    stayPickup:{may:{rooms:70,adr:113,rev:7890},jun:{rooms:18,adr:110,rev:1988}},
+    livePickup:null,
+    stayMTD:{rooms:827,occ:40.4,adr:124,revpar:50,revenue:102545},
+    liveMTD:null,
+    stayMonthly:[{"month": "Jan 2026", "rooms": 1648, "occ": 80.5, "adr": 182, "revpar": 147, "revenue": 300537}, {"month": "Feb 2026", "rooms": 1760, "occ": 95.2, "adr": 290, "revpar": 277, "revenue": 511064}, {"month": "Mar 2026", "rooms": 1943, "occ": 95.0, "adr": 264, "revpar": 251, "revenue": 512984}, {"month": "Apr 2026", "rooms": 1728, "occ": 87.3, "adr": 155, "revpar": 135, "revenue": 267541}, {"month": "May 2026", "rooms": 827, "occ": 40.4, "adr": 124, "revpar": 50, "revenue": 102545}, {"month": "Jun 2026", "rooms": 295, "occ": 14.9, "adr": 101, "revpar": 15, "revenue": 29680}, {"month": "Jul 2026", "rooms": 175, "occ": 8.6, "adr": 99, "revpar": 8, "revenue": 17269}, {"month": "Aug 2026", "rooms": 65, "occ": 3.2, "adr": 107, "revpar": 3, "revenue": 6981}, {"month": "Sep 2026", "rooms": 11, "occ": 0.6, "adr": 124, "revpar": 1, "revenue": 1368}, {"month": "Oct 2026", "rooms": 23, "occ": 1.1, "adr": 199, "revpar": 2, "revenue": 4580}, {"month": "Nov 2026", "rooms": 14, "occ": 0.7, "adr": 222, "revpar": 2, "revenue": 3114}, {"month": "Dec 2026", "rooms": 7, "occ": 0.3, "adr": 177, "revpar": 1, "revenue": 1236}],
+    liveMonthly:null,
+    stayPickupFull:[{"month": "May 2026", "rooms": 70, "adr": 113, "rev": 7890}, {"month": "Jun 2026", "rooms": 18, "adr": 110, "rev": 1988}],
+    livePickupFull:null,
+    stayBudgetMay:163150,
+    liveBudgetMay:null,
+    resid:{"total_charges": 232974.42, "collected": 214699.41, "collected_pct": 92.2, "unpaid_curr": 18275.01, "unpaid_pct": 7.8, "units_unpaid": 18, "prior_unpaid": 70.53, "total_unpaid": 18345.54},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 66, "occ": 40, "adr": 124},
+    liveHeader:null,
+    lto:{
+      combined:{count:3,gross_d:264,gross_pct:3.28,net_d:470,net_pct:6.00},
+      new:{count:2,gross_d:-79,gross_pct:-1.45,net_d:127,net_pct:2.43},
+      renewal:{count:1,gross_d:343,gross_pct:13.19,net_d:343,net_pct:13.19},
+      detail:[
+        {type:"Renewal",fp:"1B1B*",unit:"1-517",sqft:805,app_date:"2026-05-01",lease_start:"2026-05-02",term:5,curr_gross:2943,conc:0,curr_eff:2943,prev_gross:2600,prev_eff:2600,vac_days:0,gross_to_d:343,gross_to_pct:13.2,net_to_d:343,net_to_pct:13.2},
+        {type:"New",fp:"2B2B*",unit:"1-412",sqft:1066,app_date:"2026-04-29",lease_start:"2026-05-28",term:12,curr_gross:2533,conc:0,curr_eff:2533,prev_gross:2480,prev_eff:2274,vac_days:83,gross_to_d:53,gross_to_pct:2.1,net_to_d:259,net_to_pct:11.4},
+        {type:"New",fp:"2B2B*",unit:"1-439",sqft:1066,app_date:"2026-05-01",lease_start:"2026-05-14",term:13,curr_gross:2827,conc:0,curr_eff:2827,prev_gross:2959,prev_eff:2959,vac_days:53,gross_to_d:-132,gross_to_pct:-4.5,net_to_d:-132,net_to_pct:-4.5},
+      ]
+    },
+    retail:null
+  },
+  "East Austin 1630": {
+    label:"Sentral East Austin at 1630 E. Sixth", city:"Austin, TX", units:89,
+    hasLive:false, hasRetail:true,
+    weeks:[
+      {week:"May 3",units:89,curr_occ:95.5,budg_occ:95.5,occ_14d:91.0,occ_30d:87.6,occ_60d:78.7,lse_14d:16,lse_30d:19,lse_60d:26,mkt_rent:1473,inplace_rent:1589,eff_rent:1576,atr_pct:22.5,atr_num:20,leads:43,tours:1,net_leases:0,gross_leases:0,renews:3,ntv:4,t4_net:0,close_pct:0,lead_to_tour:2.3},
+      {week:"Apr 26",units:89,curr_occ:97.8,budg_occ:96.0,occ_14d:93.3,occ_30d:91.0,occ_60d:83.1,lse_14d:14,lse_30d:16,lse_60d:22,mkt_rent:1476,inplace_rent:1582,eff_rent:1565,atr_pct:16.9,atr_num:15,leads:64,tours:0,net_leases:0,gross_leases:0,renews:1,ntv:0,t4_net:0,close_pct:0,lead_to_tour:0},
+      {week:"Apr 19",units:90,curr_occ:97.8,budg_occ:96.0,occ_14d:95.6,occ_30d:91.1,occ_60d:82.2,lse_14d:11,lse_30d:15,lse_60d:22,mkt_rent:1477,inplace_rent:1578,eff_rent:1561,atr_pct:17.8,atr_num:16,leads:32,tours:1,net_leases:0,gross_leases:0,renews:1,ntv:2,t4_net:0,close_pct:0,lead_to_tour:3.1},
+      {week:"Apr 12",units:90,curr_occ:98.9,budg_occ:96.0,occ_14d:97.8,occ_30d:92.2,occ_60d:86.7,lse_14d:9,lse_30d:14,lse_60d:18,mkt_rent:1477,inplace_rent:1582,eff_rent:1566,atr_pct:15.6,atr_num:14,leads:32,tours:0,net_leases:0,gross_leases:0,renews:0,ntv:2,t4_net:0,close_pct:0,lead_to_tour:0},
+    ],
+    stay:{rooms:5154,occ:28,adr:136,revpar:38,revenue:698453,remain:13096,var_rooms:-3356,var_occ:-35,var_adr:-15,var_rev:-584754},
+    live:null,
+    stayPickup:{may:{rooms:22,adr:129,rev:2843},jun:{rooms:5,adr:158,rev:790}},
+    livePickup:null,
+    stayMTD:{rooms:768,occ:49.5,adr:126,revpar:62,revenue:96867},
+    liveMTD:null,
+    stayMonthly:[{"month": "Jan 2026", "rooms": 567, "occ": 36.6, "adr": 112, "revpar": 41, "revenue": 63316}, {"month": "Feb 2026", "rooms": 761, "occ": 54.4, "adr": 127, "revpar": 69, "revenue": 96525}, {"month": "Mar 2026", "rooms": 921, "occ": 59.4, "adr": 201, "revpar": 120, "revenue": 185509}, {"month": "Apr 2026", "rooms": 1065, "occ": 71.0, "adr": 131, "revpar": 93, "revenue": 139337}, {"month": "May 2026", "rooms": 768, "occ": 49.5, "adr": 126, "revpar": 62, "revenue": 96867}, {"month": "Jun 2026", "rooms": 367, "occ": 24.5, "adr": 101, "revpar": 25, "revenue": 37168}, {"month": "Jul 2026", "rooms": 269, "occ": 17.4, "adr": 83, "revpar": 14, "revenue": 22393}, {"month": "Aug 2026", "rooms": 182, "occ": 11.7, "adr": 84, "revpar": 10, "revenue": 15306}, {"month": "Sep 2026", "rooms": 71, "occ": 4.7, "adr": 156, "revpar": 7, "revenue": 11064}, {"month": "Oct 2026", "rooms": 166, "occ": 10.7, "adr": 173, "revpar": 19, "revenue": 28719}, {"month": "Nov 2026", "rooms": 14, "occ": 0.9, "adr": 135, "revpar": 1, "revenue": 1884}, {"month": "Dec 2026", "rooms": 3, "occ": 0.2, "adr": 122, "revpar": 0, "revenue": 366}],
+    liveMonthly:null,
+    stayPickupFull:[{"month": "May 2026", "rooms": 22, "adr": 129, "rev": 2843}, {"month": "Jun 2026", "rooms": 5, "adr": 158, "rev": 790}],
+    livePickupFull:null,
+    stayBudgetMay:82602,
+    liveBudgetMay:null,
+    resid:{"total_charges": 129007.31, "collected": 124934.26, "collected_pct": 96.8, "unpaid_curr": 4073.05, "unpaid_pct": 3.2, "units_unpaid": 9, "prior_unpaid": 137.6, "total_unpaid": 4210.65},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 50, "occ": 50, "adr": 126},
+    liveHeader:null,
+    lto:{
+      combined:{count:3,gross_d:232,gross_pct:5.46,net_d:232,net_pct:5.46},
+      new:{count:0,gross_d:0,gross_pct:0,net_d:0,net_pct:0},
+      renewal:{count:3,gross_d:232,gross_pct:5.46,net_d:232,net_pct:5.46},
+      detail:[
+        {type:"Renewal",fp:"0B1B-1B1B*",unit:"1504",sqft:355,app_date:"2026-05-02",lease_start:"2026-06-30",term:12,curr_gross:1578,conc:0,curr_eff:1578,prev_gross:1548,prev_eff:1548,vac_days:0,gross_to_d:30,gross_to_pct:1.9,net_to_d:30,net_to_pct:1.9},
+        {type:"Renewal",fp:"0B1B-1B1B*",unit:"1529",sqft:355,app_date:"2026-04-30",lease_start:"2026-03-20",term:12,curr_gross:1579,conc:0,curr_eff:1579,prev_gross:1377,prev_eff:1377,vac_days:0,gross_to_d:202,gross_to_pct:14.7,net_to_d:202,net_to_pct:14.7},
+        {type:"Renewal",fp:"0B1B-AFF*",unit:"1310",sqft:355,app_date:"2026-04-28",lease_start:"2026-06-14",term:12,curr_gross:1323,conc:0,curr_eff:1323,prev_gross:1323,prev_eff:1323,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+      ]
+    },
+    retail:{
+      total_charges:20401.85,owed_0_30:11996.91,owed_31_60:8404.94,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:20401.85,
+      tenants:[{unit:"1",name:"Drop Kick Bar and Kitchen",charges:20401.85,owed_0_30:11996.91,owed_31_60:8404.94,owed_61_90:0,owed_90plus:0,prepay:0,total_owed:20401.85}]
+    }
+  },
+  "Michigan Ave": {
+    label:"Sentral Michigan Avenue", city:"Chicago, IL", units:362,
+    hasLive:true, hasRetail:false,
+    weeks:[
+      {week:"May 3",units:362,curr_occ:96.7,budg_occ:96.2,occ_14d:96.1,occ_30d:94.8,occ_60d:92.3,lse_14d:0,lse_30d:5,lse_60d:14,mkt_rent:3312,inplace_rent:3135,eff_rent:3100,atr_pct:8.0,atr_num:29,leads:76,tours:19,net_leases:2,gross_leases:4,renews:6,ntv:1,t4_net:3,close_pct:10.5,lead_to_tour:25.0},
+      {week:"Apr 26",units:362,curr_occ:96.7,budg_occ:96.2,occ_14d:96.1,occ_30d:95.0,occ_60d:91.4,lse_14d:0,lse_30d:4,lse_60d:17,mkt_rent:3276,inplace_rent:3120,eff_rent:3084,atr_pct:8.6,atr_num:31,leads:82,tours:20,net_leases:2,gross_leases:4,renews:2,ntv:7,t4_net:4,close_pct:10.0,lead_to_tour:24.4},
+      {week:"Apr 19",units:362,curr_occ:96.1,budg_occ:96.2,occ_14d:97.0,occ_30d:95.0,occ_60d:93.1,lse_14d:-3,lse_30d:4,lse_60d:11,mkt_rent:3221,inplace_rent:3118,eff_rent:3082,atr_pct:7.2,atr_num:26,leads:69,tours:7,net_leases:2,gross_leases:2,renews:4,ntv:1,t4_net:5,close_pct:28.6,lead_to_tour:10.1},
+      {week:"Apr 12",units:362,curr_occ:95.0,budg_occ:96.2,occ_14d:96.4,occ_30d:95.3,occ_60d:93.4,lse_14d:-1,lse_30d:3,lse_60d:10,mkt_rent:3164,inplace_rent:3071,eff_rent:3035,atr_pct:7.5,atr_num:27,leads:62,tours:18,net_leases:6,gross_leases:6,renews:8,ntv:4,t4_net:4,close_pct:33.3,lead_to_tour:29.0},
+    ],
+    stay:{rooms:12348,occ:37,adr:269,revpar:99,revenue:3325901,remain:21232,var_rooms:-14881,var_occ:-44,var_adr:19,var_rev:-3483405},
+    live:{rooms:4555,occ:50,adr:174,revpar:87,revenue:794515,var_rooms:-1406,var_occ:-24,var_adr:5,var_rev:-218257},
+    stayPickup:{may:{rooms:21,adr:295,rev:6185},jun:{rooms:9,adr:271,rev:2440}},
+    livePickup:{may:{rooms:27,adr:132,rev:3565},jun:{rooms:5,adr:284,rev:1420}},
+    stayMTD:{rooms:2012,occ:70.5,adr:350,revpar:247,revenue:705024},
+    liveMTD:{rooms:633,occ:81.7,adr:186,revpar:152,revenue:117624},
+    stayMonthly:[{"month": "Jan 2026", "rooms": 1439, "occ": 50.5, "adr": 147, "revpar": 74, "revenue": 210862}, {"month": "Feb 2026", "rooms": 1539, "occ": 59.7, "adr": 150, "revpar": 89, "revenue": 230469}, {"month": "Mar 2026", "rooms": 1727, "occ": 60.6, "adr": 201, "revpar": 122, "revenue": 346751}, {"month": "Apr 2026", "rooms": 2019, "occ": 73.2, "adr": 208, "revpar": 152, "revenue": 419556}, {"month": "May 2026", "rooms": 2012, "occ": 70.5, "adr": 350, "revpar": 247, "revenue": 705024}, {"month": "Jun 2026", "rooms": 1188, "occ": 43.0, "adr": 372, "revpar": 160, "revenue": 441643}, {"month": "Jul 2026", "rooms": 996, "occ": 34.9, "adr": 360, "revpar": 126, "revenue": 359030}, {"month": "Aug 2026", "rooms": 592, "occ": 20.8, "adr": 404, "revpar": 84, "revenue": 239053}, {"month": "Sep 2026", "rooms": 293, "occ": 10.6, "adr": 309, "revpar": 33, "revenue": 90622}, {"month": "Oct 2026", "rooms": 419, "occ": 14.7, "adr": 610, "revpar": 90, "revenue": 255557}, {"month": "Nov 2026", "rooms": 93, "occ": 3.4, "adr": 219, "revpar": 7, "revenue": 20371}, {"month": "Dec 2026", "rooms": 31, "occ": 1.1, "adr": 225, "revpar": 2, "revenue": 6963}],
+    liveMonthly:[{"month": "Jan 2026", "rooms": 365, "occ": 47.1, "adr": 116, "revpar": 55, "revenue": 42519}, {"month": "Feb 2026", "rooms": 472, "occ": 67.4, "adr": 112, "revpar": 75, "revenue": 52756}, {"month": "Mar 2026", "rooms": 514, "occ": 66.3, "adr": 128, "revpar": 85, "revenue": 65632}, {"month": "Apr 2026", "rooms": 683, "occ": 91.1, "adr": 138, "revpar": 126, "revenue": 94475}, {"month": "May 2026", "rooms": 633, "occ": 81.7, "adr": 186, "revpar": 152, "revenue": 117624}, {"month": "Jun 2026", "rooms": 554, "occ": 73.9, "adr": 264, "revpar": 195, "revenue": 146198}, {"month": "Jul 2026", "rooms": 582, "occ": 75.1, "adr": 247, "revpar": 186, "revenue": 143833}, {"month": "Aug 2026", "rooms": 356, "occ": 45.9, "adr": 213, "revpar": 98, "revenue": 75920}, {"month": "Sep 2026", "rooms": 180, "occ": 24.0, "adr": 139, "revpar": 33, "revenue": 25020}, {"month": "Oct 2026", "rooms": 216, "occ": 27.9, "adr": 141, "revpar": 39, "revenue": 30538}],
+    stayPickupFull:[{"month": "May 2026", "rooms": 21, "adr": 295, "rev": 6185}, {"month": "Jun 2026", "rooms": 9, "adr": 271, "rev": 2440}, {"month": "Jul 2026", "rooms": 5, "adr": 345, "rev": 1723}, {"month": "Aug 2026", "rooms": 6, "adr": 319, "rev": 1913}],
+    livePickupFull:[{"month": "May 2026", "rooms": 27, "adr": 132, "rev": 3565}, {"month": "Jun 2026", "rooms": 5, "adr": 284, "rev": 1420}],
+    stayBudgetMay:738342,
+    liveBudgetMay:96785,
+    resid:{"total_charges": 1156610.82, "collected": 952437.73, "collected_pct": 82.3, "unpaid_curr": 204173.09, "unpaid_pct": 17.7, "units_unpaid": 67, "prior_unpaid": 87133.74, "total_unpaid": 291306.83},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 92, "occ": 71, "adr": 350},
+    liveHeader:{"keys": 31, "occ": 82, "adr": 186},
+    lto:{
+      combined:{count:10,gross_d:2866,gross_pct:11.36,net_d:2506,net_pct:10.06},
+      new:{count:5,gross_d:693,gross_pct:5.53,net_d:181,net_pct:1.46},
+      renewal:{count:5,gross_d:2173,gross_pct:17.13,net_d:2325,net_pct:18.59},
+      detail:[
+        {type:"New",fp:"0B1B*",unit:"1106",sqft:605,app_date:"2026-04-28",lease_start:"2026-06-24",term:13,curr_gross:2307,conc:1000,curr_eff:2231,prev_gross:2165,prev_eff:2165,vac_days:9,gross_to_d:142,gross_to_pct:6.6,net_to_d:66,net_to_pct:3.0},
+        {type:"New",fp:"0B1B*",unit:"4603",sqft:570,app_date:"2026-04-27",lease_start:"2026-05-27",term:12,curr_gross:2643,conc:1000,curr_eff:2560,prev_gross:2349,prev_eff:2224,vac_days:7,gross_to_d:294,gross_to_pct:12.5,net_to_d:336,net_to_pct:15.1},
+        {type:"New",fp:"0B1B*",unit:"4703",sqft:570,app_date:"2026-04-29",lease_start:"2026-05-13",term:15,curr_gross:2432,conc:2932,curr_eff:2237,prev_gross:2331,prev_eff:2331,vac_days:74,gross_to_d:101,gross_to_pct:4.3,net_to_d:-94,net_to_pct:-4.0},
+        {type:"Renewal",fp:"0B1B*",unit:"2403",sqft:570,app_date:"2026-05-01",lease_start:"2026-06-04",term:11,curr_gross:2471,conc:0,curr_eff:2471,prev_gross:2287,prev_eff:2246,vac_days:0,gross_to_d:184,gross_to_pct:8.0,net_to_d:225,net_to_pct:10.0},
+        {type:"Renewal",fp:"0B1B*",unit:"4009",sqft:500,app_date:"2026-04-27",lease_start:"2026-05-10",term:6,curr_gross:2420,conc:0,curr_eff:2420,prev_gross:2078,prev_eff:2043,vac_days:0,gross_to_d:342,gross_to_pct:16.5,net_to_d:377,net_to_pct:18.5},
+        {type:"New",fp:"1B1B*",unit:"3507",sqft:695,app_date:"2026-04-29",lease_start:"2026-05-13",term:12,curr_gross:2954,conc:0,curr_eff:2954,prev_gross:2804,prev_eff:2804,vac_days:54,gross_to_d:150,gross_to_pct:5.3,net_to_d:150,net_to_pct:5.3},
+        {type:"New",fp:"1B1B*",unit:"4207",sqft:695,app_date:"2026-04-28",lease_start:"2026-05-12",term:12,curr_gross:2898,conc:3398,curr_eff:2615,prev_gross:2892,prev_eff:2892,vac_days:89,gross_to_d:6,gross_to_pct:0.2,net_to_d:-277,net_to_pct:-9.6},
+        {type:"Renewal",fp:"1B1B*",unit:"2607",sqft:695,app_date:"2026-04-27",lease_start:"2026-05-06",term:1,curr_gross:4180,conc:0,curr_eff:4180,prev_gross:2936,prev_eff:2836,vac_days:0,gross_to_d:1244,gross_to_pct:42.4,net_to_d:1344,net_to_pct:47.4},
+        {type:"Renewal",fp:"1B1B*",unit:"3307",sqft:695,app_date:"2026-04-27",lease_start:"2026-05-13",term:12,curr_gross:2855,conc:0,curr_eff:2855,prev_gross:2656,prev_eff:2656,vac_days:0,gross_to_d:199,gross_to_pct:7.5,net_to_d:199,net_to_pct:7.5},
+        {type:"Renewal",fp:"1B1B*",unit:"3505",sqft:710,app_date:"2026-04-27",lease_start:"2026-06-05",term:12,curr_gross:2931,conc:347,curr_eff:2903,prev_gross:2727,prev_eff:2723,vac_days:0,gross_to_d:204,gross_to_pct:7.5,net_to_d:180,net_to_pct:6.6},
+      ]
+    },
+    retail:null
+  },
+  "East Austin 1614": {
+    label:"Sentral East Austin at 1614 E. Sixth", city:"Austin, TX", units:102,
+    hasLive:true, hasRetail:false,
+    weeks:[
+      {week:"May 3",units:102,curr_occ:82.4,budg_occ:95.5,occ_14d:81.4,occ_30d:81.4,occ_60d:73.5,lse_14d:0,lse_30d:0,lse_60d:8,mkt_rent:2130,inplace_rent:2278,eff_rent:2266,atr_pct:26.5,atr_num:27,leads:26,tours:2,net_leases:2,gross_leases:3,renews:2,ntv:2,t4_net:1,close_pct:100.0,lead_to_tour:7.7},
+      {week:"Apr 26",units:99,curr_occ:82.8,budg_occ:95.5,occ_14d:84.8,occ_30d:84.8,occ_60d:77.8,lse_14d:-1,lse_30d:-1,lse_60d:6,mkt_rent:2120,inplace_rent:2280,eff_rent:2267,atr_pct:24.2,atr_num:24,leads:24,tours:5,net_leases:2,gross_leases:2,renews:1,ntv:0,t4_net:0,close_pct:40.0,lead_to_tour:20.8},
+      {week:"Apr 19",units:99,curr_occ:82.8,budg_occ:95.5,occ_14d:83.8,occ_30d:82.8,occ_60d:77.8,lse_14d:0,lse_30d:1,lse_60d:6,mkt_rent:2110,inplace_rent:2280,eff_rent:2267,atr_pct:26.3,atr_num:26,leads:24,tours:7,net_leases:0,gross_leases:0,renews:1,ntv:2,t4_net:0,close_pct:0,lead_to_tour:29.2},
+      {week:"Apr 12",units:98,curr_occ:85.7,budg_occ:95.5,occ_14d:84.7,occ_30d:85.7,occ_60d:81.6,lse_14d:0,lse_30d:-1,lse_60d:3,mkt_rent:2103,inplace_rent:2284,eff_rent:2271,atr_pct:23.5,atr_num:23,leads:26,tours:4,net_leases:0,gross_leases:1,renews:2,ntv:4,t4_net:0,close_pct:0,lead_to_tour:15.4},
+    ],
+    stay:{rooms:2679,occ:84,adr:166,revpar:140,revenue:444707,remain:505,var_rooms:-5315,var_occ:6,var_adr:-14,var_rev:-994451},
+    live:{rooms:661,occ:45,adr:117,revpar:53,revenue:77079,var_rooms:-579,var_occ:-40,var_adr:12,var_rev:-52513},
+    stayPickup:{may:{rooms:11,adr:117,rev:1291},jun:{rooms:-2,adr:179,rev:-358}},
+    livePickup:{may:{rooms:0,adr:0,rev:0},jun:{rooms:0,adr:0,rev:0}},
+    stayMTD:{rooms:234,occ:58.1,adr:145,revpar:84,revenue:33866},
+    liveMTD:{rooms:89,occ:71.8,adr:119,revpar:85,revenue:10548},
+    stayMonthly:[{"month": "May 2026", "rooms": 234, "occ": 58.1, "adr": 145, "revpar": 84, "revenue": 33866}, {"month": "Jun 2026", "rooms": 139, "occ": 35.6, "adr": 155, "revpar": 55, "revenue": 21594}, {"month": "Jul 2026", "rooms": 17, "occ": 4.2, "adr": 128, "revpar": 5, "revenue": 2183}, {"month": "Aug 2026", "rooms": 1, "occ": 0.2, "adr": 106, "revpar": 0, "revenue": 106}, {"month": "Sep 2026", "rooms": 45, "occ": 11.5, "adr": 188, "revpar": 22, "revenue": 8465}, {"month": "Oct 2026", "rooms": 106, "occ": 26.3, "adr": 204, "revpar": 54, "revenue": 21572}],
+    liveMonthly:[{"month": "Jan 2026", "rooms": 35, "occ": 28.2, "adr": 88, "revpar": 25, "revenue": 3093}, {"month": "Feb 2026", "rooms": 105, "occ": 93.8, "adr": 113, "revpar": 106, "revenue": 11833}, {"month": "Mar 2026", "rooms": 104, "occ": 83.9, "adr": 124, "revpar": 104, "revenue": 12912}, {"month": "Apr 2026", "rooms": 71, "occ": 59.2, "adr": 149, "revpar": 88, "revenue": 10554}, {"month": "May 2026", "rooms": 89, "occ": 71.8, "adr": 119, "revpar": 85, "revenue": 10548}, {"month": "Jun 2026", "rooms": 106, "occ": 88.3, "adr": 103, "revpar": 91, "revenue": 10909}, {"month": "Jul 2026", "rooms": 92, "occ": 74.2, "adr": 98, "revpar": 73, "revenue": 8994}, {"month": "Aug 2026", "rooms": 36, "occ": 29.0, "adr": 104, "revpar": 30, "revenue": 3751}, {"month": "Sep 2026", "rooms": 3, "occ": 2.5, "adr": 129, "revpar": 3, "revenue": 386}, {"month": "Oct 2026", "rooms": 15, "occ": 12.1, "adr": 223, "revpar": 27, "revenue": 3338}, {"month": "Nov 2026", "rooms": 5, "occ": 4.2, "adr": 152, "revpar": 6, "revenue": 761}],
+    stayPickupFull:[{"month": "May 2026", "rooms": 11, "adr": 117, "rev": 1291}, {"month": "Jun 2026", "rooms": -2, "adr": 179, "rev": -358}],
+    livePickupFull:null,
+    stayBudgetMay:107431,
+    liveBudgetMay:22626,
+    resid:{"total_charges": 203488.46, "collected": 189598.03, "collected_pct": 93.2, "unpaid_curr": 13890.43, "unpaid_pct": 6.8, "units_unpaid": 8, "prior_unpaid": 0.0, "total_unpaid": 13890.43},
+    updates:{"strategic": ["Extended the concessions to immediate move-in rooms and added staleness last week's sales call. Purpose to drive an immediate occupancy boost.", "Renewal Rent Growth is still a focus and averaging 6.1% growth YTD, over the budget of 4.8%. This is due to strong GPR growth and build."], "people": ["No open positions at this time"], "capex": ["Dog Run Turf Replaced 4.23-24.2026 - COMPLETED", "Getting new grill quotes to send CIAF", "Sent CIAF for hallway carpet replacement", "Sent CIAF for Elevator camera installation"]},
+    stayHeader:{"keys": 8, "occ": 94, "adr": 145},
+    liveHeader:{"keys": 8, "occ": 72, "adr": 119},
+    lto:{
+      combined:{count:4,gross_d:617,gross_pct:8.54,net_d:954,net_pct:13.86},
+      new:{count:2,gross_d:574,gross_pct:14.32,net_d:737,net_pct:19.16},
+      renewal:{count:2,gross_d:43,gross_pct:1.34,net_d:217,net_pct:7.14},
+      detail:[
+        {type:"New",fp:"0B1B-1B1B*",unit:"322",sqft:654,app_date:"2026-05-02",lease_start:"2026-06-20",term:12,curr_gross:1937,conc:0,curr_eff:1937,prev_gross:1856,prev_eff:1693,vac_days:7,gross_to_d:81,gross_to_pct:4.4,net_to_d:244,net_to_pct:14.4},
+        {type:"New",fp:"0B1B-1B1B*",unit:"501",sqft:825,app_date:"2026-05-03",lease_start:"2026-06-07",term:12,curr_gross:2646,conc:0,curr_eff:2646,prev_gross:2153,prev_eff:2153,vac_days:7,gross_to_d:493,gross_to_pct:22.9,net_to_d:493,net_to_pct:22.9},
+        {type:"Renewal",fp:"0B1B-1B1B*",unit:"421",sqft:654,app_date:"2026-04-30",lease_start:"2026-04-29",term:13,curr_gross:1933,conc:0,curr_eff:1933,prev_gross:1890,prev_eff:1716,vac_days:0,gross_to_d:43,gross_to_pct:2.3,net_to_d:217,net_to_pct:12.6},
+        {type:"Renewal",fp:"0B1B-1B1B-AFF*",unit:"213",sqft:434,app_date:"2026-05-03",lease_start:"2026-07-29",term:12,curr_gross:1323,conc:0,curr_eff:1323,prev_gross:1323,prev_eff:1323,vac_days:0,gross_to_d:0,gross_to_pct:0.0,net_to_d:0,net_to_pct:0.0},
+      ]
+    },
+    retail:null
+  }
+};
+
+const PROP_KEYS=Object.keys(PROPS);
+let currentProp=PROP_KEYS[0];
+
+// ── BUILD PROPERTY SELECTOR ───────────────────────────────────────────────────
+function buildPropBar(){
+  document.getElementById('propBar').innerHTML=PROP_KEYS.map(k=>{
+    const p=PROPS[k];
+    return `<button class="prop-btn${k===currentProp?' active':''}" onclick="selectProp('${k}')">${p.label.replace('Sentral ','')}</button>`;
+  }).join('');
+}
+
+// ── BUILD TABS ────────────────────────────────────────────────────────────────
+function buildNav(p){
+  const tabs=[
+    {id:'updates',label:'Property Updates'},
+    {id:'leasing',label:'Leasing Overview'},
+    ...(p.hasLive?[{id:'live',label:'Furnished / LIVE'}]:[]),
+    {id:'str',label:'STR / Hotel'},
+    {id:'otb',label:'OTB & Pickup'},
+    {id:'lto',label:'Lease Tradeout'},
+    ...(p.hasRetail?[{id:'retail',label:'Retail Delinquency'}]:[]),
+    {id:'resid',label:'Residential Delinquency'},
+  ];
+  document.getElementById('navTabs').innerHTML=tabs.map((t,i)=>
+    `<button class="nav-tab${i===0?' active':''}" onclick="switchTab('${t.id}',this)">${t.label}</button>`
+  ).join('');
+}
+
+// ── SELECT PROPERTY ───────────────────────────────────────────────────────────
+function selectProp(key){
+  currentProp=key;
+  buildPropBar();
+  renderProperty();
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('tab-'+name);
+  if(el)el.classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderProperty(){
+  destroyCharts();
+  const p=PROPS[currentProp];
+  const w=p.weeks[0];// current week
+  buildNav(p);
+
+  const occVsBudget=w.curr_occ>=w.budg_occ?
+    `<span class="badge badge-ok">▲ Above Budget</span>`:
+    `<span class="badge badge-warn">▼ Below Budget</span>`;
+
+  let html=`
+  <!-- PROP HEADER -->
+  <div class="prop-hdr">
+    <div>
+      <div class="prop-hdr-name">${p.label}</div>
+      <div class="prop-hdr-meta">
+        <span class="badge badge-city">${p.city}</span>
+        ${occVsBudget}
+        ${p.hasLive?'<span class="badge" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">LIVE</span>':''}
+        ${p.hasRetail?'<span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Retail</span>':''}
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB PANELS WRAPPER -->
+  ${buildUpdatesTab(p)}
+  ${buildLeasingTab(p)}
+  ${p.hasLive?buildLiveTab(p):''}
+  ${buildSTRTab(p)}
+  ${buildOTBTab(p)}
+  ${buildLTOTab(p)}
+  ${p.hasRetail?buildRetailTab(p):''}
+  ${buildResidTab(p)}
+
+  <div class="footer">
+    <span>Sentral · ${p.label} · Sources: Yardi Box Score · OTB PDFs · Daily Pickup CSV · LTO Data</span>
+    <span>Week ending May 3, 2026 · Generated May 5, 2026</span>
+  </div>`;
+
+  document.getElementById('mainPage').innerHTML=html;
+  // Activate first tab
+  const firstTab=document.querySelector('.tab-panel');
+  if(firstTab)firstTab.classList.add('active');
+
+  // Draw charts
+  drawCharts(p);
+}
+
+// ── TAB BUILDERS ─────────────────────────────────────────────────────────────
+function buildLeasingTab(p){
+  const w=p.weeks[0];
+  const diff=w.curr_occ-w.budg_occ;
+  const alertHtml=diff>=0?
+    `<div class="alert a-ok">✓ Occupancy is ${diff.toFixed(1)}pp above budget. ${w.atr_num} units available to rent.</div>`:
+    `<div class="alert a-warn">⚠ Occupancy is ${Math.abs(diff).toFixed(1)}pp below budget. ${w.atr_num} units available to rent.</div>`;
+  const trend60Alert=w.lse_60d>10?
+    `<div class="alert a-warn">⚠ 60-day trend requires ${w.lse_60d} leases. Monitor pipeline closely.</div>`:
+    `<div class="alert a-ok">✓ 60-day trend requires ${w.lse_60d} leases — manageable.</div>`;
+
+  return `<div class="tab-panel" id="tab-leasing">
+  <div class="prop-hdr-stats" style="display:flex;gap:24px;justify-content:flex-end;margin-bottom:16px;">
+    <div class="phs"><div class="phs-lbl">Units</div><div class="phs-val bl">${p.units}</div></div>
+    <div class="phs"><div class="phs-lbl">Curr Occ</div><div class="phs-val ${upDn(w.curr_occ-w.budg_occ)}">${fmtP(w.curr_occ)}</div></div>
+    <div class="phs"><div class="phs-lbl">Market Rent</div><div class="phs-val">${fmt$(w.mkt_rent)}</div></div>
+  </div>
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">01</div><div class="sec-title">Current Occupancy</div><div class="sec-sub">Yardi Box Score · ${w.week} · ${w.units} units</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">Total Units</div><div class="kpi-val">${w.units}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Current Occ %</div><div class="kpi-val bl">${fmtP(w.curr_occ)}</div><div class="kpi-d ${upDn(diff)}">${diff>=0?'+':''}${diff.toFixed(1)}pp vs budget</div></div>
+      <div class="kpi"><div class="kpi-lbl">Budget Occ %</div><div class="kpi-val">${fmtP(w.budg_occ)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">ATR Units</div><div class="kpi-val am">${w.atr_num}</div><div class="kpi-d fl">${fmtP(w.atr_pct)} of total</div></div>
+      <div class="kpi"><div class="kpi-lbl">Market Rent</div><div class="kpi-val bl">${fmt$(w.mkt_rent)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">In-Place Rent</div><div class="kpi-val">${w.inplace_rent?fmt$(w.inplace_rent):'—'}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Eff / RevPAR</div><div class="kpi-val pu">${w.eff_rent?fmt$(w.eff_rent):'—'}</div></div>
+    </div>
+    <div class="occ-card" style="margin-top:12px;">
+      ${occBar('Current Occupancy',w.curr_occ,w.budg_occ,'#1d4ed8')}
+      <div class="leg-row"><div class="leg-item"><div class="leg-dot" style="background:#1d4ed8;"></div>Occupied (${Math.round(w.units*w.curr_occ/100)}/${w.units})</div><div class="leg-item"><div class="leg-dot" style="background:#f59e0b;"></div>Budget (${fmtP(w.budg_occ)})</div></div>
+    </div>
+    ${alertHtml}
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">02</div><div class="sec-title">Occupancy Trend Outlook</div></div>
+    <div class="three-col">
+      <div class="kpi" style="border-left:4px solid #1d4ed8;"><div class="kpi-lbl">14-Day Trend</div><div class="kpi-val bl">${fmtP(w.occ_14d)}</div><div class="kpi-s">Leases needed: <strong>${w.lse_14d}</strong></div></div>
+      <div class="kpi" style="border-left:4px solid #d97706;"><div class="kpi-lbl">30-Day Trend</div><div class="kpi-val am">${fmtP(w.occ_30d)}</div><div class="kpi-s">Leases needed: <strong>${w.lse_30d}</strong></div></div>
+      <div class="kpi" style="border-left:4px solid ${w.lse_60d>10?'#dc2626':'#059669'};"><div class="kpi-lbl">60-Day Trend</div><div class="kpi-val ${w.lse_60d>10?'dn':'gr'}">${fmtP(w.occ_60d)}</div><div class="kpi-s">Leases needed: <strong>${w.lse_60d}</strong></div></div>
+    </div>
+    ${trend60Alert}
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">03</div><div class="sec-title">Weekly Leasing Funnel</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">Leads</div><div class="kpi-val">${w.leads}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Tours</div><div class="kpi-val">${w.tours}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Net Leases</div><div class="kpi-val">${w.net_leases}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Gross Leases</div><div class="kpi-val">${w.gross_leases}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Renewals</div><div class="kpi-val gr">${w.renews}</div></div>
+      <div class="kpi"><div class="kpi-lbl">NTV / Evictions</div><div class="kpi-val">${w.ntv}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Lead → Tour</div><div class="kpi-val bl">${fmtP(w.lead_to_tour)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Tour Closing %</div><div class="kpi-val pu">${fmtP(w.close_pct)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">T4 Net Leases</div><div class="kpi-val am">${w.t4_net}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">04</div><div class="sec-title">4-Week Trajectory</div></div>
+    <div class="two-col" style="margin-bottom:12px;">
+      <div class="chart-card"><div class="chart-lbl">Leads &amp; Tours</div><div class="ch-sm"><canvas id="chartLeadsTours"></canvas></div></div>
+      <div class="chart-card"><div class="chart-lbl">Occupancy Trends</div><div class="ch-sm"><canvas id="chartOccTrend"></canvas></div></div>
+    </div>
+    ${trajTable(p.weeks)}
+  </div>
+  </div>`;
+}
+
+function buildLiveTab(p){
+  const lv=p.live;
+  if(!lv)return'';
+  const pu=p.livePickup||{may:{rooms:0,adr:0,rev:0},jun:{rooms:0,adr:0,rev:0}};
+  const mtd=p.liveMTD||{rooms:0,occ:0,adr:0,revpar:0,revenue:0};
+  return `<div class="tab-panel" id="tab-live">
+
+  ${p.liveHeader?`<div class="prop-hdr" style="margin-bottom:14px;background:#f0fdf4;border-color:#bbf7d0;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Furnished / LIVE Source Data — LIVE OTB PDF · May 5, 2026</div>
+      <div style="font-size:12px;color:#334155;">${p.label}</div>
+    </div>
+    <div class="prop-hdr-stats">
+      <div class="phs"><div class="phs-lbl">Keys</div><div class="phs-val gr">${p.liveHeader.keys}</div></div>
+      <div class="phs"><div class="phs-lbl">May Occ%</div><div class="phs-val">${p.liveHeader.occ}%</div></div>
+      <div class="phs"><div class="phs-lbl">May ADR</div><div class="phs-val">\$${p.liveHeader.adr.toLocaleString()}</div></div>
+    </div>
+  </div>`:''}
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-g">01</div><div class="sec-title">Furnished / LIVE — Month-to-Date (May 2026)</div><div class="sec-sub">Daily Pickup CSV · May 1–5, 2026</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">MTD Rooms</div><div class="kpi-val bl">${mtd.rooms.toLocaleString()}</div><div class="kpi-s">May 1–5</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD Occupancy</div><div class="kpi-val gr">${mtd.occ}%</div><div class="kpi-s">of available</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD ADR</div><div class="kpi-val">${fmt$(mtd.adr)}</div><div class="kpi-s">avg daily rate</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD RevPAR</div><div class="kpi-val pu">${fmt$(mtd.revpar)}</div><div class="kpi-s">rev / avail room</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD Revenue</div><div class="kpi-val am">${fmtK(mtd.revenue)}</div><div class="kpi-s">May 1–5 actual</div></div>
+      ${p.liveBudgetMay?`<div class="kpi" style="border-left:3px solid ${mtd.revenue>=p.liveBudgetMay?'#16a34a':'#dc2626'};">
+        <div class="kpi-lbl">vs May Budget</div>
+        <div class="kpi-val ${mtd.revenue>=p.liveBudgetMay?'gr':'dn'}">${mtd.revenue>=p.liveBudgetMay?'+':''}${fmtK(mtd.revenue-p.liveBudgetMay)}</div>
+        <div class="kpi-s ${mtd.revenue>=p.liveBudgetMay?'gr':'dn'}">${((mtd.revenue-p.liveBudgetMay)/p.liveBudgetMay*100).toFixed(1)}% vs $${(p.liveBudgetMay/1000).toFixed(0)}K budget</div>
+      </div>`:''}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num" style="background:#94a3b8;">YTD</div><div class="sec-title">Furnished / LIVE — Year-to-Date OTB</div><div class="sec-sub">LIVE OTB Report · As of May 5, 2026</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">Rooms OTB (YTD)</div><div class="kpi-val">${lv.rooms.toLocaleString()}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Occ % (YTD)</div><div class="kpi-val">${lv.occ}%</div></div>
+      <div class="kpi"><div class="kpi-lbl">ADR (YTD)</div><div class="kpi-val">${fmt$(lv.adr)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">RevPAR (YTD)</div><div class="kpi-val">${fmt$(lv.revpar)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">YTD Revenue</div><div class="kpi-val">${fmtK(lv.revenue)}</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-g">02</div><div class="sec-title">WoW Pickup — Furnished / LIVE</div><div class="sec-sub">May 5 vs May 4, 2026</div></div>
+    <div class="four-col">
+      <div class="var-card"><div class="var-lbl">May Rooms</div><div class="var-val ${varCls(pu.may.rooms)}">${pu.may.rooms>0?'+':''}${pu.may.rooms}</div><div class="var-hint ${varCls(pu.may.rooms)}">${arrow(pu.may.rooms)} WoW</div></div>
+      <div class="var-card"><div class="var-lbl">May ADR</div><div class="var-val ${pu.may.adr>0?'vp':'vf'}">${pu.may.adr>0?fmt$(pu.may.adr):'—'}</div></div>
+      <div class="var-card"><div class="var-lbl">May Revenue</div><div class="var-val ${varCls(pu.may.rev)}">${pu.may.rev>0?'+':pu.may.rev<0?'-':''}${fmtK(Math.abs(pu.may.rev))}</div><div class="var-hint ${varCls(pu.may.rev)}">${arrow(pu.may.rev)} WoW</div></div>
+      <div class="var-card"><div class="var-lbl">Jun Rooms</div><div class="var-val ${varCls(pu.jun.rooms)}">${pu.jun.rooms>0?'+':''}${pu.jun.rooms}</div><div class="var-hint ${varCls(pu.jun.rooms)}">${arrow(pu.jun.rooms)} WoW</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-g">03</div><div class="sec-title">Variance to Budget — Furnished / LIVE</div></div>
+    <div class="four-col">
+      <div class="var-card"><div class="var-lbl">Rooms</div><div class="var-val ${varCls(lv.var_rooms)}">${sign(lv.var_rooms)}</div><div class="var-hint ${varCls(lv.var_rooms)}">${arrow(lv.var_rooms)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">Occupancy</div><div class="var-val ${varCls(lv.var_occ)}">${lv.var_occ>=0?'+':''}${lv.var_occ}pp</div><div class="var-hint ${varCls(lv.var_occ)}">${arrow(lv.var_occ)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">ADR</div><div class="var-val ${varCls(lv.var_adr)}">${lv.var_adr>=0?'+':''}${fmt$(lv.var_adr)}</div><div class="var-hint ${varCls(lv.var_adr)}">${arrow(lv.var_adr)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">Revenue</div><div class="var-val ${varCls(lv.var_rev)}">${sign(lv.var_rev,'$')}</div><div class="var-hint ${varCls(lv.var_rev)}">${arrow(lv.var_rev)} vs budget</div></div>
+    </div>
+  </div>
+  </div>`;
+}
+
+
+function buildSTRTab(p){
+  const s=p.stay;
+  const smtd=p.stayMTD||{rooms:0,occ:0,adr:0,revpar:0,revenue:0};
+  return `<div class="tab-panel" id="tab-str">
+
+  ${p.stayHeader?`<div class="prop-hdr" style="margin-bottom:14px;background:#faf5ff;border-color:#e9d5ff;">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">STR / Hotel Source Data — STAY OTB PDF · May 5, 2026</div>
+      <div style="font-size:12px;color:#334155;">${p.label}</div>
+    </div>
+    <div class="prop-hdr-stats">
+      <div class="phs"><div class="phs-lbl">Keys</div><div class="phs-val pu">${p.stayHeader.keys}</div></div>
+      <div class="phs"><div class="phs-lbl">May Occ%</div><div class="phs-val">${p.stayHeader.occ}%</div></div>
+      <div class="phs"><div class="phs-lbl">May ADR</div><div class="phs-val">\$${p.stayHeader.adr.toLocaleString()}</div></div>
+    </div>
+  </div>`:''}
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-p">01</div><div class="sec-title">STR / Hotel — Month-to-Date (May 2026)</div><div class="sec-sub">Daily Pickup CSV · May 1–5, 2026</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">MTD Rooms</div><div class="kpi-val bl">${smtd.rooms.toLocaleString()}</div><div class="kpi-s">May 1–5</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD Occupancy</div><div class="kpi-val gr">${smtd.occ}%</div><div class="kpi-s">of available keys</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD ADR</div><div class="kpi-val">${fmt$(smtd.adr)}</div><div class="kpi-s">avg daily rate</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD RevPAR</div><div class="kpi-val pu">${fmt$(smtd.revpar)}</div><div class="kpi-s">rev / avail room</div></div>
+      <div class="kpi"><div class="kpi-lbl">MTD Revenue</div><div class="kpi-val am">${fmtK(smtd.revenue)}</div><div class="kpi-s">May 1–5 actual</div></div>
+      ${p.stayBudgetMay?`<div class="kpi" style="border-left:3px solid ${smtd.revenue>=p.stayBudgetMay?'#16a34a':'#dc2626'};">
+        <div class="kpi-lbl">vs May Budget</div>
+        <div class="kpi-val ${smtd.revenue>=p.stayBudgetMay?'gr':'dn'}">${smtd.revenue>=p.stayBudgetMay?'+':''}${fmtK(smtd.revenue-p.stayBudgetMay)}</div>
+        <div class="kpi-s ${smtd.revenue>=p.stayBudgetMay?'gr':'dn'}">${((smtd.revenue-p.stayBudgetMay)/p.stayBudgetMay*100).toFixed(1)}% vs $${(p.stayBudgetMay/1000).toFixed(0)}K budget</div>
+      </div>`:''}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num" style="background:#94a3b8;">YTD</div><div class="sec-title">STR / Hotel — Year-to-Date OTB</div><div class="sec-sub">STAY Pickup & OTB PDF · As of May 5, 2026</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">Rooms OTB (YTD)</div><div class="kpi-val">${s.rooms.toLocaleString()}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Occ % (YTD)</div><div class="kpi-val">${s.occ}%</div></div>
+      <div class="kpi"><div class="kpi-lbl">ADR (YTD)</div><div class="kpi-val">${fmt$(s.adr)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">RevPAR (YTD)</div><div class="kpi-val">${fmt$(s.revpar)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">YTD Revenue</div><div class="kpi-val">${fmtK(s.revenue)}</div></div>
+      ${s.remain?`<div class="kpi"><div class="kpi-lbl">Remaining Keys</div><div class="kpi-val">${s.remain.toLocaleString()}</div></div>`:''}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-p">02</div><div class="sec-title">WoW Pickup — STAY</div><div class="sec-sub">May 5 vs May 4, 2026</div></div>
+    <div class="four-col">
+      <div class="var-card"><div class="var-lbl">May Rooms</div><div class="var-val ${varCls(p.stayPickup.may.rooms)}">${p.stayPickup.may.rooms>0?'+':''}${p.stayPickup.may.rooms}</div><div class="var-hint ${varCls(p.stayPickup.may.rooms)}">${arrow(p.stayPickup.may.rooms)} WoW</div></div>
+      <div class="var-card"><div class="var-lbl">May ADR</div><div class="var-val ${p.stayPickup.may.adr>0?'vp':'vf'}">${p.stayPickup.may.adr>0?fmt$(p.stayPickup.may.adr):'—'}</div></div>
+      <div class="var-card"><div class="var-lbl">May Revenue</div><div class="var-val ${varCls(p.stayPickup.may.rev)}">${p.stayPickup.may.rev>=0?'+':''}${fmtK(p.stayPickup.may.rev)}</div></div>
+      <div class="var-card"><div class="var-lbl">Jun Rooms</div><div class="var-val ${varCls(p.stayPickup.jun.rooms)}">${p.stayPickup.jun.rooms>0?'+':''}${p.stayPickup.jun.rooms}</div><div class="var-hint ${varCls(p.stayPickup.jun.rooms)}">${arrow(p.stayPickup.jun.rooms)} WoW</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-p">03</div><div class="sec-title">Variance to Budget — STAY</div></div>
+    <div class="four-col">
+      <div class="var-card"><div class="var-lbl">Rooms</div><div class="var-val ${varCls(s.var_rooms)}">${sign(s.var_rooms)}</div><div class="var-hint ${varCls(s.var_rooms)}">${arrow(s.var_rooms)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">Occupancy</div><div class="var-val ${varCls(s.var_occ)}">${s.var_occ>=0?'+':''}${s.var_occ}pp</div><div class="var-hint ${varCls(s.var_occ)}">${arrow(s.var_occ)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">ADR</div><div class="var-val ${varCls(s.var_adr)}">${s.var_adr>=0?'+':''}${fmt$(s.var_adr)}</div><div class="var-hint ${varCls(s.var_adr)}">${arrow(s.var_adr)} vs budget</div></div>
+      <div class="var-card"><div class="var-lbl">Revenue</div><div class="var-val ${varCls(s.var_rev)}">${sign(s.var_rev,'$')}</div><div class="var-hint ${varCls(s.var_rev)}">${arrow(s.var_rev)} vs budget</div></div>
+    </div>
+  </div>
+  </div>`;
+}
+
+
+function buildOTBTab(p){
+  const s=p.stay; const lv=p.live;
+  const smtd=p.stayMTD||{rooms:0,occ:0,adr:0,revpar:0,revenue:0};
+  const lmtd=p.liveMTD||null;
+
+  // Build monthly pickup table rows
+  function pickupRows(monthly){
+    if(!monthly||monthly.length===0) return '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:16px;">No data</td></tr>';
+    return monthly.filter(m=>m.rooms>0).map(m=>`<tr>
+      <td>${m.month}</td>
+      <td>${m.rooms.toLocaleString()}</td>
+      <td class="${m.occ>=50?'gr':m.occ>=25?'am':'dn'}">${m.occ}%</td>
+      <td>${m.adr>0?'$'+m.adr.toLocaleString():'—'}</td>
+      <td>${m.revpar>0?'$'+m.revpar.toLocaleString():'—'}</td>
+      <td>$${(m.revenue/1000).toFixed(0)}K</td>
+    </tr>`).join('');
+  }
+
+  const stayRows = pickupRows(p.stayMonthly||[]);
+  const liveRows = lv ? pickupRows(p.liveMonthly||[]) : '';
+
+  return `<div class="tab-panel" id="tab-otb">
+
+  <!-- MTD SECTION -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-o">01</div><div class="sec-title">Month-to-Date — May 2026</div><div class="sec-sub">Daily Pickup CSV · May 1–5, 2026</div></div>
+    <div class="${lv&&lmtd?'three-col':'two-col'}">
+      <div class="kpi" style="border-top:3px solid #7c3aed;">
+        <div class="kpi-lbl">STAY — MTD Revenue</div>
+        <div class="kpi-val pu">$${(smtd.revenue/1000).toFixed(0)}K</div>
+        <div class="kpi-s">${smtd.rooms} rooms · ${smtd.occ}% occ · $${smtd.adr} ADR · $${smtd.revpar} RevPAR</div>
+      </div>
+      ${lv&&lmtd?`<div class="kpi" style="border-top:3px solid #059669;">
+        <div class="kpi-lbl">LIVE — MTD Revenue</div>
+        <div class="kpi-val gr">$${(lmtd.revenue/1000).toFixed(0)}K</div>
+        <div class="kpi-s">${lmtd.rooms} rooms · ${lmtd.occ}% occ · $${lmtd.adr} ADR · $${lmtd.revpar} RevPAR</div>
+      </div>`:''}
+      <div class="kpi" style="border-top:3px solid #1d4ed8;">
+        <div class="kpi-lbl">Combined MTD Revenue</div>
+        <div class="kpi-val bl">$${((smtd.revenue+(lv&&lmtd?lmtd.revenue:0))/1000).toFixed(0)}K</div>
+        <div class="kpi-s">STAY${lv&&lmtd?' + LIVE':''} · May 1–5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YTD OTB SECTION -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num" style="background:#94a3b8;">YTD</div><div class="sec-title">Year-to-Date OTB Summary</div><div class="sec-sub">OTB PDFs · As of May 5, 2026</div></div>
+    <div class="${lv?'three-col':'two-col'}">
+      <div class="kpi" style="border-top:3px solid #7c3aed;">
+        <div class="kpi-lbl">STAY Revenue OTB</div><div class="kpi-val pu">${fmtK(s.revenue)}</div>
+        <div class="kpi-s">${s.rooms.toLocaleString()} rm nights · ${s.occ}% occ</div>
+      </div>
+      ${lv?`<div class="kpi" style="border-top:3px solid #059669;">
+        <div class="kpi-lbl">LIVE Revenue OTB</div><div class="kpi-val gr">${fmtK(lv.revenue)}</div>
+        <div class="kpi-s">${lv.rooms.toLocaleString()} rm nights · ${lv.occ}% occ</div>
+      </div>`:''}
+      <div class="kpi" style="border-top:3px solid #1d4ed8;">
+        <div class="kpi-lbl">Combined Revenue</div><div class="kpi-val bl">${fmtK(s.revenue+(lv?lv.revenue:0))}</div>
+        <div class="kpi-s">STAY${lv?' + LIVE':''} total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTHLY BREAKDOWN -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-o">02</div><div class="sec-title">Monthly Booking Detail — Full Year</div><div class="sec-sub">Source: Daily Pickup CSV</div></div>
+    <div class="${lv?'two-col':''}">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">STAY — by Month</div>
+        <div class="tcard"><table>
+          <thead><tr><th>Month</th><th>Rooms</th><th>Occ%</th><th>ADR</th><th>RevPAR</th><th>Revenue</th></tr></thead>
+          <tbody>${stayRows}</tbody>
+        </table></div>
+      </div>
+      ${lv?`<div>
+        <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">LIVE (Furnished) — by Month</div>
+        <div class="tcard"><table>
+          <thead><tr><th>Month</th><th>Rooms</th><th>Occ%</th><th>ADR</th><th>RevPAR</th><th>Revenue</th></tr></thead>
+          <tbody>${liveRows}</tbody>
+        </table></div>
+      </div>`:''}
+    </div>
+  </div>
+
+  <!-- DAY-OVER-DAY PICKUP -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num sn-o">03</div><div class="sec-title">Day-over-Day Pickup — Full Year</div><div class="sec-sub">May 5 vs May 4, 2026</div></div>
+    <div class="${lv&&p.livePickupFull?'two-col':''}">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">STAY Pickup</div>
+        <div class="tcard"><table>
+          <thead><tr><th>Month</th><th>Rooms</th><th>ADR</th><th>Revenue</th></tr></thead>
+          <tbody>${(p.stayPickupFull||[]).map(r=>`<tr>
+            <td>${r.month}</td>
+            <td class="${varCls(r.rooms)}">${r.rooms>0?'+':''}${r.rooms}</td>
+            <td>${r.adr>0?fmt$(r.adr):'—'}</td>
+            <td class="${varCls(r.rev)}">${r.rev!==0?fmtK(r.rev):'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+      ${lv&&p.livePickupFull?`<div>
+        <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">LIVE (Furnished) Pickup</div>
+        <div class="tcard"><table>
+          <thead><tr><th>Month</th><th>Rooms</th><th>ADR</th><th>Revenue</th></tr></thead>
+          <tbody>${(p.livePickupFull||[]).map(r=>`<tr>
+            <td>${r.month}</td>
+            <td class="${varCls(r.rooms)}">${r.rooms>0?'+':''}${r.rooms}</td>
+            <td>${r.adr>0?fmt$(r.adr):'—'}</td>
+            <td class="${varCls(r.rev)}">${r.rev!==0?fmtK(r.rev):'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`:''}
+    </div>
+  </div>
+
+  </div>`;
+}
+
+function buildLTOTab(p){
+  if(!p.lto)return`<div class="tab-panel" id="tab-lto"><div class="alert a-info" style="margin-top:20px;">ℹ No Lease Tradeout data available for this property in the current report period.</div></div>`;
+  const lto=p.lto;
+  const col=(v)=>v>0?'gr':v<0?'dn':'fl';
+  const newRows=lto.detail.filter(r=>r.type==='New');
+  const renRows=lto.detail.filter(r=>r.type==='Renewal');
+  const allGross=lto.combined.gross_d;
+  const allNet=lto.combined.net_d;
+  return `<div class="tab-panel" id="tab-lto">
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">01</div><div class="sec-title">Lease Tradeout Summary</div><div class="sec-sub">Calculated from Yieldstar LTO DATA · Recalculated from raw</div></div>
+    <div class="lto-grid">
+      <div class="lto-box">
+        <div class="lto-box-hdr"><div style="width:9px;height:9px;border-radius:2px;background:#1d4ed8;flex-shrink:0;"></div>GROSS TRADE OUT<span>Uses Gross Rent</span></div>
+        <div class="lto-cols">
+          <div class="lto-col"><div class="lto-col-lbl">Combined</div><div class="lto-col-cnt">${lto.combined.count} leases</div><div class="lto-col-d ${col(lto.combined.gross_d)}">${lto.combined.gross_d>=0?'+':''}$${Math.abs(lto.combined.gross_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.combined.gross_d)}">${signP(lto.combined.gross_pct)}</div></div>
+          <div class="lto-col"><div class="lto-col-lbl">New Leases</div><div class="lto-col-cnt">${lto.new.count} leases</div><div class="lto-col-d ${col(lto.new.gross_d)}">${lto.new.gross_d>=0?'+':''}$${Math.abs(lto.new.gross_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.new.gross_d)}">${signP(lto.new.gross_pct)}</div></div>
+          <div class="lto-col"><div class="lto-col-lbl">Renewals</div><div class="lto-col-cnt">${lto.renewal.count} leases</div><div class="lto-col-d ${col(lto.renewal.gross_d)}">${lto.renewal.gross_d>=0?'+':''}$${Math.abs(lto.renewal.gross_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.renewal.gross_d)}">${signP(lto.renewal.gross_pct)}</div></div>
+        </div>
+      </div>
+      <div class="lto-box">
+        <div class="lto-box-hdr"><div style="width:9px;height:9px;border-radius:2px;background:#7c3aed;flex-shrink:0;"></div>NET EFFECTIVE TRADE OUT<span>Concessions amortized</span></div>
+        <div class="lto-cols">
+          <div class="lto-col"><div class="lto-col-lbl">Combined</div><div class="lto-col-cnt">${lto.combined.count} leases</div><div class="lto-col-d ${col(lto.combined.net_d)}">${lto.combined.net_d>=0?'+':''}$${Math.abs(lto.combined.net_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.combined.net_d)}">${signP(lto.combined.net_pct)}</div></div>
+          <div class="lto-col"><div class="lto-col-lbl">New Leases</div><div class="lto-col-cnt">${lto.new.count} leases</div><div class="lto-col-d ${col(lto.new.net_d)}">${lto.new.net_d>=0?'+':''}$${Math.abs(lto.new.net_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.new.net_d)}">${signP(lto.new.net_pct)}</div></div>
+          <div class="lto-col"><div class="lto-col-lbl">Renewals</div><div class="lto-col-cnt">${lto.renewal.count} leases</div><div class="lto-col-d ${col(lto.renewal.net_d)}">${lto.renewal.net_d>=0?'+':''}$${Math.abs(lto.renewal.net_d).toLocaleString()}</div><div class="lto-col-p ${col(lto.renewal.net_d)}">${signP(lto.renewal.net_pct)}</div></div>
+        </div>
+      </div>
+    </div>
+    ${allGross<0?`<div class="alert a-warn">⚠ Negative gross trade out — new leases are being signed below previous lease levels. Review pricing strategy.</div>`:
+      allGross>500?`<div class="alert a-ok">✓ Positive trade out across all lease categories.</div>`:
+      `<div class="alert a-info">ℹ Modest positive trade out. Monitor renewal rate closely.</div>`}
+  </div>
+  ${newRows.length>0?`<div class="section">
+    <div class="sec-hdr"><div class="sec-num">02</div><div class="sec-title">New Leases — Detail</div><div class="sec-sub">${newRows.length} leases</div></div>
+    ${ltoDetailTable(newRows,'new lease')}
+  </div>`:''}
+  ${renRows.length>0?`<div class="section">
+    <div class="sec-hdr"><div class="sec-num">03</div><div class="sec-title">Renewals — Detail</div><div class="sec-sub">${renRows.length} leases</div></div>
+    ${ltoDetailTable(renRows,'renewal')}
+  </div>`:''}
+  </div>`;
+}
+
+function buildRetailTab(p){
+  if(!p.retail)return'';
+  const r=p.retail;
+  const hasDelinquency=r.owed_61_90>0||r.owed_90plus>0;
+  return `<div class="tab-panel" id="tab-retail">
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num ${hasDelinquency?'sn-r':'sn-g'}">01</div><div class="sec-title">Retail Delinquency</div><div class="sec-sub">Yardi Delinquency Report · As of May 5, 2026</div></div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl">Total Tenants</div><div class="kpi-val">${r.tenants.length}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Total Charges</div><div class="kpi-val">${fmtK(r.total_charges)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">0–30 Days</div><div class="kpi-val">${fmtK(r.owed_0_30)}</div></div>
+      <div class="kpi"><div class="kpi-lbl">31–60 Days</div><div class="kpi-val ${r.owed_31_60>0?'am':''}">${r.owed_31_60>0?fmtK(r.owed_31_60):'—'}</div></div>
+      <div class="kpi"><div class="kpi-lbl">61–90 Days</div><div class="kpi-val ${r.owed_61_90>0?'dn':''}">${r.owed_61_90>0?fmtK(r.owed_61_90):'—'}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Over 90 Days</div><div class="kpi-val ${r.owed_90plus>0?'dn':''}">${r.owed_90plus>0?fmtK(r.owed_90plus):'—'}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Prepayments</div><div class="kpi-val ${r.prepay<0?'gr':''}">${r.prepay<0?fmtK(r.prepay):'—'}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Total Owed</div><div class="kpi-val ${r.total_owed<0?'gr':r.total_owed>10000?'am':''}">${fmtK(r.total_owed)}</div></div>
+    </div>
+    ${hasDelinquency?`<div class="alert a-err">⚠ ESCALATION REQUIRED: This property has tenants with 61+ day delinquency totaling ${fmtK(r.owed_61_90+r.owed_90plus)}.</div>`:
+      r.owed_31_60>10000?`<div class="alert a-warn">⚠ ${fmtK(r.owed_31_60)} in 31–60 day aging — watch closely for escalation.</div>`:
+      `<div class="alert a-ok">✓ No delinquency past 60 days. All tenants current or in normal billing cycle.</div>`}
+  </div>
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-num">02</div><div class="sec-title">Tenant Detail</div></div>
+    ${deliqTenantTable(r.tenants)}
+  </div>
+  </div>`;
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+function drawCharts(p){
+  const w=p.weeks;
+  const labels=w.map(x=>x.week).reverse();
+
+  mkChart('chartLeadsTours',{type:'bar',
+    data:{labels,datasets:[
+      {label:'Leads',data:w.map(x=>x.leads).reverse(),backgroundColor:labels.map((_,i)=>i===labels.length-1?'#1d4ed8':'#bfdbfe'),borderRadius:4},
+      {label:'Tours',data:w.map(x=>x.tours).reverse(),backgroundColor:labels.map((_,i)=>i===labels.length-1?'#7c3aed':'#ddd6fe'),borderRadius:4},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:9,padding:8,font:{size:10}}},tooltip:tip},
+      scales:{x:{grid},y:{grid,ticks:{font:{size:10}}}}}
+  });
+
+  mkChart('chartOccTrend',{type:'line',
+    data:{labels,datasets:[
+      {label:'Current Occ',data:w.map(x=>x.curr_occ).reverse(),borderColor:'#1d4ed8',backgroundColor:'rgba(29,78,216,.05)',borderWidth:2.5,pointRadius:4,fill:true,tension:0.3},
+      {label:'14d Trend',data:w.map(x=>x.occ_14d).reverse(),borderColor:'#7c3aed',backgroundColor:'transparent',borderWidth:1.5,borderDash:[4,3],pointRadius:3,tension:0.3},
+      {label:'30d Trend',data:w.map(x=>x.occ_30d).reverse(),borderColor:'#d97706',backgroundColor:'transparent',borderWidth:1.5,borderDash:[4,3],pointRadius:3,tension:0.3},
+      {label:'60d Trend',data:w.map(x=>x.occ_60d).reverse(),borderColor:'#dc2626',backgroundColor:'transparent',borderWidth:1.5,borderDash:[2,3],pointRadius:3,tension:0.3},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:9,padding:8,font:{size:10}}},
+        tooltip:{...tip,callbacks:{label:c=>c.dataset.label+': '+c.raw.toFixed(1)+'%'}}},
+      scales:{x:{grid,ticks:{font:{size:10}}},
+        y:{grid,ticks:{callback:v=>v+'%',font:{size:10}},
+          min:Math.max(0,Math.floor(Math.min(...w.map(x=>Math.min(x.curr_occ,x.occ_60d)))-3)),
+          max:Math.min(100,Math.ceil(Math.max(...w.map(x=>x.curr_occ))+2))}}}
+  });
+}
+
+function buildResidTab(p){
+  const r=p.resid;
+  if(!r)return'';
+
+  const collectedBar=Math.min(r.collected_pct,100);
+  const unpaidBar=Math.min(r.unpaid_pct,100);
+  const severityColor=r.unpaid_pct>=20?'#dc2626':r.unpaid_pct>=10?'#f59e0b':'#16a34a';
+  const severityAlert=r.unpaid_pct>=20?
+    `<div class="alert a-err">⚠ HIGH DELINQUENCY — ${r.unpaid_pct}% of charges unpaid. Escalation recommended.</div>`:
+    r.unpaid_pct>=10?
+    `<div class="alert a-warn">⚠ ELEVATED — ${r.unpaid_pct}% of charges unpaid. Monitor closely.</div>`:
+    `<div class="alert a-ok">✓ Delinquency within acceptable range at ${r.unpaid_pct}%.</div>`;
+
+  return `<div class="tab-panel" id="tab-resid">
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-num" style="background:${severityColor};">01</div>
+      <div class="sec-title">Residential Delinquency — May 2026</div>
+      <div class="sec-sub">Collections Dashboard · Period 05/2026</div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-lbl">Total Charges</div>
+        <div class="kpi-val">${fmtK(r.total_charges)}</div>
+        <div class="kpi-s">billed this period</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Collected</div>
+        <div class="kpi-val gr">${fmtK(r.collected)}</div>
+        <div class="kpi-s">${r.collected_pct}% of charges</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Unpaid (Current)</div>
+        <div class="kpi-val" style="color:${severityColor};">${fmtK(r.unpaid_curr)}</div>
+        <div class="kpi-s">${r.unpaid_pct}% of charges</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Units w/ Unpaid</div>
+        <div class="kpi-val am">${r.units_unpaid}</div>
+        <div class="kpi-s">residential units</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Prior Period Unpaid</div>
+        <div class="kpi-val">${fmtK(r.prior_unpaid)}</div>
+        <div class="kpi-s">carried forward</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Cumulative Unpaid</div>
+        <div class="kpi-val am">${fmtK(r.total_unpaid)}</div>
+        <div class="kpi-s">current + prior</div>
+      </div>
+      <div class="kpi" style="border-left:3px solid #94a3b8;">
+        <div class="kpi-lbl">WoW Change</div>
+        <div class="kpi-val fl">N/A</div>
+        <div class="kpi-s">Upload prior week to compare</div>
+      </div>
+    </div>
+
+    ${severityAlert}
+  </div>
+
+  <!-- Collection Rate Visual -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-num">02</div>
+      <div class="sec-title">Collection Performance</div>
+    </div>
+    <div class="occ-card">
+      <div class="occ-row">
+        <div class="occ-top">
+          <span class="occ-name">Charges Collected</span>
+          <div class="occ-right">
+            <span class="occ-pct" style="color:#16a34a;">${r.collected_pct}%</span>
+            <span class="occ-vs">${fmtK(r.collected)} of ${fmtK(r.total_charges)}</span>
+          </div>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${collectedBar}%;background:#16a34a;"></div></div>
+      </div>
+      <div class="occ-row" style="margin-bottom:0;">
+        <div class="occ-top">
+          <span class="occ-name">Charges Unpaid</span>
+          <div class="occ-right">
+            <span class="occ-pct" style="color:${severityColor};">${r.unpaid_pct}%</span>
+            <span class="occ-vs">${fmtK(r.unpaid_curr)} unpaid this period</span>
+          </div>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${unpaidBar}%;background:${severityColor};"></div></div>
+      </div>
+      <div class="leg-row">
+        <div class="leg-item"><div class="leg-dot" style="background:#16a34a;"></div>Collected (${r.collected_pct}%)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:${severityColor};"></div>Unpaid (${r.unpaid_pct}%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WoW Trend -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-num">03</div>
+      <div class="sec-title">Week-over-Week Delinquency Change</div>
+      <div class="sec-sub">Current period vs prior period</div>
+    </div>
+    <div class="two-col">
+      <div class="kpi" style="border-top:3px solid ${severityColor};">
+        <div class="kpi-lbl">Current Period Unpaid</div>
+        <div class="kpi-val" style="color:${severityColor};">${fmtK(r.unpaid_curr)}</div>
+        <div class="kpi-s">May 2026 — this report</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid #94a3b8;">
+        <div class="kpi-lbl">WoW Change</div>
+        <div class="kpi-val fl">—</div>
+        <div class="kpi-s">Upload prior week's report to calculate</div>
+      </div>
+    </div>
+    <div class="alert a-info" style="margin-top:8px;">ℹ WoW change will auto-calculate once the prior week's Collections Dashboard is uploaded alongside this report. The "Prior Period Unpaid Charges" column in this file is a cumulative carry-forward, not a weekly snapshot.</div>
+  </div>
+
+  <!-- Summary Table -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-num">04</div>
+      <div class="sec-title">Charges Summary</div>
+      <div class="sec-sub">Columns A, D, E, F, G, H, I — Collections Dashboard</div>
+    </div>
+    <div class="tcard">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;">Property</th>
+            <th>Total Charges (D)</th>
+            <th>Collected (E)</th>
+            <th>% Collected (F)</th>
+            <th>Unpaid (G)</th>
+            <th>% Unpaid (H)</th>
+            <th>Units Unpaid (I)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tr-hi">
+            <td>${p.label}</td>
+            <td>${fmtK(r.total_charges)}</td>
+            <td class="gr">${fmtK(r.collected)}</td>
+            <td class="gr">${r.collected_pct}%</td>
+            <td class="${r.unpaid_pct>=20?'dn':r.unpaid_pct>=10?'am':''}">${fmtK(r.unpaid_curr)}</td>
+            <td class="${r.unpaid_pct>=20?'dn':r.unpaid_pct>=10?'am':''}">${r.unpaid_pct}%</td>
+            <td class="${r.units_unpaid>50?'dn':r.units_unpaid>20?'am':''}">${r.units_unpaid}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Cumulative Total</td>
+            <td colspan="3"></td>
+            <td colspan="2">${fmtK(r.total_unpaid)} (current + prior)</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+  </div>`;
+}
+
+function buildUpdatesTab(p){
+  const u=p.updates||{strategic:[],people:[],capex:[]};
+  function itemList(arr,icon,emptyMsg){
+    if(!arr||arr.length===0) return `<li style="color:#94a3b8;font-style:italic;">${emptyMsg}</li>`;
+    return arr.map(item=>`<li>${icon} ${item}</li>`).join('');
+  }
+  return `<div class="tab-panel" id="tab-updates">
+  <div style="display:grid;grid-template-columns:1fr;gap:18px;">
+
+    <!-- Strategic Initiatives -->
+    <div class="section" style="margin-bottom:0;">
+      <div class="sec-hdr">
+        <div class="sec-num" style="background:#1d4ed8;font-size:13px;">🎯</div>
+        <div class="sec-title">Strategic Initiatives</div>
+        <div class="sec-sub">Week ending May 3, 2026</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px 24px;">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+          ${itemList(u.strategic,'','No strategic initiatives noted this week.')}
+        </ul>
+      </div>
+    </div>
+
+    <!-- People Updates -->
+    <div class="section" style="margin-bottom:0;">
+      <div class="sec-hdr">
+        <div class="sec-num" style="background:#7c3aed;font-size:13px;">👥</div>
+        <div class="sec-title">People Updates</div>
+        <div class="sec-sub">Staffing · Hiring · HR</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px 24px;">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+          ${itemList(u.people,'','No people updates this week.')}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Asset Condition / CapEx -->
+    <div class="section" style="margin-bottom:0;">
+      <div class="sec-hdr">
+        <div class="sec-num" style="background:#d97706;font-size:13px;">🔧</div>
+        <div class="sec-title">Asset Condition / CapEx</div>
+        <div class="sec-sub">Maintenance · Capital Projects · CIAFs</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px 24px;">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+          ${(u.capex||[]).map(item=>{
+            const done=item.toUpperCase().includes('COMPLETE')||item.toUpperCase().includes('COMPLETED');
+            const ciaf=item.toUpperCase().includes('CIAF');
+            const badge=done?
+              '<span style="font-size:10px;font-weight:700;background:#dcfce7;color:#16a34a;border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle;">✓ COMPLETE</span>':
+              ciaf?'<span style="font-size:10px;font-weight:700;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle;">CIAF</span>':'';
+            return `<li style="display:flex;align-items:flex-start;gap:8px;"><span style="color:#d97706;flex-shrink:0;margin-top:2px;">▸</span><span>${item}${badge}</span></li>`;
+          }).join('')||'<li style="color:#94a3b8;font-style:italic;">No asset updates this week.</li>'}
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  </div>`;
+}
+
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+buildPropBar();
+renderProperty();
+</script>
+</body>
+</html>
